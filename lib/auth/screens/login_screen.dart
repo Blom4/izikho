@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:izikho/auth/providers/auth_provider.dart';
+import 'package:izikho/auth/providers/auth_methods_provider.dart';
 import 'package:izikho/common/utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

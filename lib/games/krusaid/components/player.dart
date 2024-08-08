@@ -19,8 +19,8 @@ class Player {
   Player({
     required this.id,
     required this.username,
-    this.cards = const [],
     required this.index,
+    this.cards = const [],
     this.isTurn = false,
     this.isShot = false,
     this.joined = false,

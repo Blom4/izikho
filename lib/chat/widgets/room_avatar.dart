@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/chat/utils/colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../auth/model/profile_model.dart';
+
 class RoomAvatar extends ConsumerWidget {
    const RoomAvatar({super.key,required this.room});
   final types.Room room;
@@ -22,7 +24,7 @@ class RoomAvatar extends ConsumerWidget {
         (u) => u.id != user!.id,
       );
 
-      color = getUserAvatarNameColor(otherUser);
+      color = getUserAvatarNameColor(ProfileModel.fromUser(otherUser));
     } catch (e) {
       // Do nothing if the other user is not found.
     }
@@ -48,7 +50,6 @@ class RoomAvatar extends ConsumerWidget {
     );
   }
 
-  // Se `otherUser` non è null, la stanza è diretta e possiamo mostrare l'indicatore di stato online.
 
   return Container(
     margin: const EdgeInsets.only(right: 16),
@@ -60,7 +61,7 @@ class RoomAvatar extends ConsumerWidget {
           child,
           if (status ==
               UserOnlineStatus
-                  .online) // Assumendo che `status` indichi lo stato online
+                  .online) 
             Container(
               width: 10,
               height: 10,

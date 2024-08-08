@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../models/game.dart';
+import '../models/game_model.dart';
 
 class GameTileWidget extends StatelessWidget {
   const GameTileWidget({
@@ -9,7 +9,7 @@ class GameTileWidget extends StatelessWidget {
     required this.gameModel,
   });
 
-  final GameModel gameModel;
+  final GameType gameModel;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class GameTileWidget extends StatelessWidget {
         alignment: Alignment.center,
         child: TextButton(
           onPressed: () {
-            context.goNamed(gameModel.routeName);
+            context.goNamed(gameModel.route);
           },
           child: Text(
             "Play",
@@ -46,13 +46,13 @@ class GameTileWidget extends StatelessWidget {
               color: Colors.deepPurple,
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: Image.asset(
-                gameModel.image,
-                fit: BoxFit.cover,
-              ),
-            ),
+            // child: ClipRRect(
+            //   borderRadius: const BorderRadius.all(Radius.circular(10)),
+            //   child: Image.asset(
+            //     gameModel.image,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
           ),
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(10)),

@@ -21,7 +21,7 @@ class ChatRoomsScreen extends StatefulHookConsumerWidget {
 class _RoomsPageState extends ConsumerState<ChatRoomsScreen> {
   @override
   Widget build(BuildContext context) {
-    final chatRoom = ref.watch(chatRoomProvider);
+    final asyncChatRoom = ref.watch(chatRoomProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -31,9 +31,9 @@ class _RoomsPageState extends ConsumerState<ChatRoomsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_comment),
-        onPressed: () => context.goNamed(ChatUsersScreen.routename),
+        onPressed: () => context.pushNamed(ChatUsersScreen.routename),
       ),
-      body: switch (chatRoom) {
+      body: switch (asyncChatRoom) {
         AsyncData(:final value) => value.isEmpty
             ? Container(
                 alignment: Alignment.center,
@@ -53,7 +53,7 @@ class _RoomsPageState extends ConsumerState<ChatRoomsScreen> {
                     subtitle: Text(
                         '${timeago.format(DateTime.now().subtract(Duration(milliseconds: DateTime.now().millisecondsSinceEpoch - (room.updatedAt ?? 0))), locale: 'en_short')} ${room.lastMessages != null && room.lastMessages!.isNotEmpty && room.lastMessages!.first is types.TextMessage ? (room.lastMessages!.first as types.TextMessage).text : ''}'),
                     onTap: () {
-                      context.goNamed(
+                      context.pushNamed(
                         ChatMessagesScreen.routename,
                         extra: room,
                       );

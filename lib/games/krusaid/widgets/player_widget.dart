@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 
-import '../components/player.dart';
 
 class PlayerWidget extends StatelessWidget {
   const PlayerWidget({
     super.key,
     required this.player,
   });
-  final Player player;
+  final KrusaidPlayerModel player;
 
   @override
   Widget build(BuildContext context) {

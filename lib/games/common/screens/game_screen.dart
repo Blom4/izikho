@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:izikho/games/common/models/game_model.dart';
 
-import '../../../common/data/game_data.dart';
 import '../../../common/responsive/responsive.dart';
-import '../../../common/widgets/game_tile_widget.dart';
+import '../widgets/game_tile_widget.dart';
 
 class GameScreen extends StatelessWidget {
   static const String routename = 'game_screen';
@@ -20,7 +20,7 @@ class GameScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(10.0),
             child: GridView.builder(
-              itemCount: 6,
+              itemCount: GameType.values.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
                 crossAxisSpacing: 10,
@@ -28,7 +28,7 @@ class GameScreen extends StatelessWidget {
               ),
               itemBuilder: (context, index) {
                 return GameTileWidget(
-                  gameModel: games[index],
+                  gameModel: GameType.values[index],
                 );
               },
             ),

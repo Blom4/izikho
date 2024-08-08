@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../auth/providers/auth_provider.dart';
-import '../../chat/screens/chat_rooms_screen.dart';
-import '../responsive/responsive.dart';
-import '../../games/common/screens/game_screen.dart';
+import '../../auth/providers/auth_methods_provider.dart';
+import '../../auth/providers/profile_provider.dart';
+import '../../chat/widgets/user_avatar.dart';
+import '../../games/common/screens/notifications_screen.dart';
+import '../../games/common/screens/game_invite_screen.dart';
+import '../../games/common/widgets/recent_notifications.dart';
+import '../widgets/my_button.dart';
+import '../widgets/online_friends_widget.dart';
 
 class HomeScreen extends StatefulHookConsumerWidget {
   static const String routename = 'home_screen';
@@ -22,17 +26,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var asyncProfile = ref.watch(profileProvider);
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
-        title: const Text("IFO LAPENG"),
+        //backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        title: const Text("EZIK'HO"),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search),
-          ),
-          IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.goNamed(NotificationsScreen.routename);
+            },
             icon: const Badge(
               label: Text("9+"),
               child: Icon(Icons.notifications),
@@ -52,94 +56,86 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 5),
+                  switch (asyncProfile) {
+                    AsyncData(:final value) => Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: MyUserAvatar(
+                              profile: value,
+                              radius: 25,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hi, Welcome',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(fontSize: 18, letterSpacing: 2),
+                              ),
+                              Text(
+                                value.username,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    AsyncError(:final error) => Text(error.toString()),
+                    _ => const Center(child: CircularProgressIndicator()),
+                  },
+                  const SizedBox(height: 30),
+                  //actions
+                  Column(
+                    children: [
+                      MyButtonWidget(
+                        label: "Start Game",
+                        onPressed: () =>
+                            context.pushNamed(GameInviteScreen.routename),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
                   //online friends
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Online Friends",
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text("See All"),
-                      ),
-                    ],
-                  ),
+                  const OnlineFriendsWidget(),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 60,
-                    width: double.infinity,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: 8,
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Column(
-                          children: [
-                            Stack(
-                              children: [
-                                const CircleAvatar(),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.lightBlue,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              "Player ${index + 1}",
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  //options
+                  //recent notifications
+                  const RecentNotifications(),
 
-                  GridView(
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: Responsive.isDesktop(context) ? 4 : 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    children: [
-                      HomeCard(
-                        icon: Icons.chat,
-                        title: "Chats",
-                        onTap: () => context.goNamed(ChatRoomsScreen.routename),
-                      ),
-                      HomeCard(
-                        icon: Icons.gamepad,
-                        title: "Games",
-                        onTap: () => context.goNamed(GameScreen.routename),
-                      ),
-                      HomeCard(
-                        icon: Icons.info,
-                        title: "About",
-                        onTap: () {},
-                      ),
-                      HomeCard(
-                        icon: Icons.settings,
-                        title: "  Settings",
-                        onTap: () {},
-                      ),
-                    ],
-                  )
+                  // GridView(
+                  //   shrinkWrap: true,
+                  //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //     crossAxisCount: Responsive.isDesktop(context) ? 4 : 2,
+                  //     mainAxisSpacing: 10,
+                  //     crossAxisSpacing: 10,
+                  //   ),
+                  //   children: [
+                  //     HomeCard(
+                  //       icon: Icons.chat,
+                  //       title: "Chats",
+                  //       onTap: () => context.goNamed(ChatRoomsScreen.routename),
+                  //     ),
+                  //     HomeCard(
+                  //       icon: Icons.gamepad,
+                  //       title: "Games",
+                  //       onTap: () => context.goNamed(GameScreen.routename),
+                  //     ),
+                  //     HomeCard(
+                  //       icon: Icons.info,
+                  //       title: "About",
+                  //       onTap: () {},
+                  //     ),
+                  //     HomeCard(
+                  //       icon: Icons.settings,
+                  //       title: "  Settings",
+                  //       onTap: () {},
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),

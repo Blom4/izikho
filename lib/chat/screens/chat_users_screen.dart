@@ -26,7 +26,7 @@ class _ChatUsersScreenState extends ConsumerState<ChatUsersScreen> {
       final room =
           await ref.read(chatRoomProvider.notifier).createRoom(otherUser);
       if (mounted) {
-        context.goNamed(ChatMessagesScreen.routename, extra: room);
+        context.pushNamed(ChatMessagesScreen.routename, extra: room);
       }
     } on PostgrestException catch (e) {
       if (mounted) {
@@ -41,14 +41,14 @@ class _ChatUsersScreenState extends ConsumerState<ChatUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final chatUsers = ref.watch(chatUsersProvider);
+    final asyncChatUsers = ref.watch(chatUsersProvider);
 
     return Scaffold(
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.light,
         title: const Text('Users'),
       ),
-      body: switch (chatUsers) {
+      body: switch (asyncChatUsers) {
         AsyncData(:final value) => value.isEmpty
             ? Container(
                 alignment: Alignment.center,
@@ -60,11 +60,11 @@ class _ChatUsersScreenState extends ConsumerState<ChatUsersScreen> {
             : ListView.builder(
                 itemCount: value.length,
                 itemBuilder: (context, index) {
-                  final user = value[index];
+                  final profile = value[index];
                   return ListTile(
-                    leading: UserAvatar(user: user),
-                    title: Text(getUserName(user)),
-                    onTap: () => _createRoom(user),
+                    leading: MyUserAvatar(profile: profile),
+                    title: Text(getUserName(profile)),
+                    onTap: () => _createRoom(profile.toUser()),
                   );
                 },
               ),

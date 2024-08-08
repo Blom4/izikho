@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:izikho/games/krusaid/models/krusaid_game_model.dart';
 
 import '../../../common/responsive/responsive.dart';
-import '../providers/krusaid_room_provider.dart';
 import '../widgets/custom_bottom_appbar.dart';
 import '../widgets/player_cards_widget.dart';
 import '../widgets/players_widget.dart';
 import '../widgets/playground_widget.dart';
 
-class KrusaidGameScreen extends HookConsumerWidget {
-  const KrusaidGameScreen({super.key});
-
+class KrusaidGameScreen extends StatefulHookConsumerWidget {
+  const KrusaidGameScreen({super.key, required this.game});
+  final KrusaidGameModel game;
   static const String routename = "Krusaid-game-screen";
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final roomProvider = ref.watch(krusaidRoomProvider);
+  ConsumerState<KrusaidGameScreen> createState() => _KrusaidGameScreenState();
+}
+
+class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
+ 
+
+@override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -50,23 +56,22 @@ class KrusaidGameScreen extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  PlayersWidget(players: roomProvider.players),
+                  PlayersWidget(players: widget.game.players),
                   Expanded(
                     child: Column(
                       children: [
-                        const Expanded(
+                        Expanded(
                           flex: 5,
-                          child: PlayGroundWidget(),
+                          child: PlayGroundWidget(game: widget.game),
                         ),
                         Expanded(
                           flex: Responsive.isMobile(context) ? 3 : 4,
-                          child: const PlayerCardsWidget(),
+                          child: PlayerCardsWidget(player: widget.game.currentPlayer),
                         ),
                       ],
                     ),
                   ),
                   if (!Responsive.isMobile(context)) const CustomBottomAppBar()
-                  //
                 ],
               ),
             ),

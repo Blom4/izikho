@@ -15,9 +15,7 @@ Future<void> main() async {
   );
   runApp(
     const ProviderScope(
-      child: UserOnlineStateObserver(
-        child: MyApp(),
-      ),
+      child: MyApp(),
     ),
   );
 }
@@ -27,13 +25,10 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     return MaterialApp.router(
       title: 'Supabase Flutter',
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //   useMaterial3: true,
-      //   colorScheme: lightColorScheme,
-      // ),
       theme: ThemeData.light(
         useMaterial3: true,
       ).copyWith(

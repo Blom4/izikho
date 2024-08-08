@@ -1,13 +1,16 @@
-
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_supabase_chat_core/flutter_supabase_chat_core.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../auth/model/profile_model.dart';
 part 'chat_users_provider.g.dart';
 
 @riverpod
-class ChatUsers extends _$ChatUsers {
-  @override
-  Stream<List<types.User>> build() {
-    return SupabaseChatCore.instance.users() ;
-  }
+Stream<List<ProfileModel>> chatUsers(ChatUsersRef ref) {
+  return SupabaseChatCore.instance.users().asyncMap(
+        (event) => event
+            .map(
+              (e) => ProfileModel.fromUser(e),
+            )
+            .toList(),
+      );
 }

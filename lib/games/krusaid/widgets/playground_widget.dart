@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:izikho/common/utils/snackbar.dart';
+import 'package:izikho/games/krusaid/dialogs/eigtht_dialog.dart';
+import 'package:izikho/games/krusaid/dialogs/joker_dialog.dart';
+import 'package:playing_cards/playing_cards.dart';
 
 import '../../../common/responsive/responsive.dart';
 import '../components/play_card.dart';
-import '../providers/krusaid_room_provider.dart';
-import '../providers/socket_methods_provider.dart';
+import '../models/krusaid_game_model.dart';
+import '../providers/krusaid_game_provider.dart';
 import 'card_widget.dart';
 
-class PlayGroundWidget extends ConsumerWidget {
-  const PlayGroundWidget({super.key});
+class PlayGroundWidget extends StatelessWidget {
+  const PlayGroundWidget({
+    super.key,
+    required this.game,
+  });
+  final KrusaidGameModel game;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final roomProvider = ref.watch(krusaidRoomProvider);
-
+  Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 250),
       child: Column(
         children: [
           if (Responsive.isDesktop(context)) const SizedBox(height: 30),
           InfoWidget(
-            numOfDeckCards: roomProvider.deck.length,
-            turnPlayerName:
-                roomProvider.players[roomProvider.turnIndex].username,
+            numOfDeckCards: game.deckCount,
+            turnPlayerName: game.turnPlayer.username,
           ),
           Expanded(
             child: Padding(
@@ -31,12 +36,12 @@ class PlayGroundWidget extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: DeckWidget(deckCards: roomProvider.deck),
+                    child: DeckWidget(deckCards: game.deck),
                   ),
                   const SizedBox(width: 20),
                   Expanded(
                     child: PlayedCardsWidget(
-                      playedCards: roomProvider.playedCards,
+                      game: game,
                     ),
                   ),
                 ],
@@ -49,18 +54,75 @@ class PlayGroundWidget extends ConsumerWidget {
   }
 }
 
-class PlayedCardsWidget extends HookConsumerWidget {
+class PlayedCardsWidget extends StatefulHookConsumerWidget {
   const PlayedCardsWidget({
     super.key,
-    required this.playedCards,
+    required this.game,
   });
-  final List<PlayCard> playedCards;
+  final KrusaidGameModel game;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PlayedCardsWidget> createState() => _PlayedCardsWidgetState();
+}
+
+class _PlayedCardsWidgetState extends ConsumerState<PlayedCardsWidget> {
+  //bool _loading =false;
+  Future<void> play(PlayCard card) async {
+    if (widget.game.isPlayable(card)) {
+      try {
+        switch (card.value) {
+          case CardValue.eight:
+            final playable = await context.showEightDialog();
+            if (playable != null) {
+              await ref.read(krusaidGameProvider(widget.game.id).notifier).play(
+                    card: card,
+                    playable: PlayCard(playable.suit, card.value),
+                  );
+            }
+            break;
+          case CardValue.joker_1 || CardValue.joker_2:
+            final isJoker = await context.showJokerDialog();
+            if (isJoker != null) {
+              if (isJoker) {
+                await ref
+                    .read(krusaidGameProvider(widget.game.id).notifier)
+                    .play(
+                      card: card,
+                      playable: card,
+                    );
+              } else {
+                if (mounted) {
+                  final playable = await context.showEightDialog();
+                  if (playable != null) {
+                    await ref
+                        .read(krusaidGameProvider(widget.game.id).notifier)
+                        .play(
+                          card: card,
+                          playable: PlayCard(playable.suit, card.value),
+                        );
+                  }
+                }
+              }
+            }
+            break;
+          default:
+            await ref
+                .read(krusaidGameProvider(widget.game.id).notifier)
+                .play(card: card);
+            break;
+        }
+      } catch (e) {
+        if (mounted) {
+          context.showSnackBar(e.toString());
+        }
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DragTarget<PlayCard>(
-        // onAcceptWithDetails: (details) =>
-        //     ref.read(socketMethodsProvider(context)).play(details.data),
+        onAcceptWithDetails: (details) async => await play(details.data),
         builder: (context, candidateData, rejectedData) {
           return Stack(
             fit: StackFit.passthrough,
@@ -76,7 +138,7 @@ class PlayedCardsWidget extends HookConsumerWidget {
                   child: const Text("PLAY HERE"),
                 ),
               ),
-              for (PlayCard card in playedCards)
+              for (PlayCard card in widget.game.playedCards)
                 CardWidget(
                   card: card,
                 )

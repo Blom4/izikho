@@ -6,13 +6,13 @@ part of 'chat_users_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chatUsersHash() => r'd20e59f7d403d4b45784e94ff0146645c016387c';
+String _$chatUsersHash() => r'257bf0ea35a10c243b91a17e8b37e03b250ba28e';
 
-/// See also [ChatUsers].
-@ProviderFor(ChatUsers)
+/// See also [chatUsers].
+@ProviderFor(chatUsers)
 final chatUsersProvider =
-    AutoDisposeStreamNotifierProvider<ChatUsers, List<types.User>>.internal(
-  ChatUsers.new,
+    AutoDisposeStreamProvider<List<ProfileModel>>.internal(
+  chatUsers,
   name: r'chatUsersProvider',
   debugGetCreateSourceHash:
       const bool.fromEnvironment('dart.vm.product') ? null : _$chatUsersHash,
@@ -20,6 +20,6 @@ final chatUsersProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$ChatUsers = AutoDisposeStreamNotifier<List<types.User>>;
+typedef ChatUsersRef = AutoDisposeStreamProviderRef<List<ProfileModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

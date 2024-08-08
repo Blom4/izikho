@@ -1,8 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../common/providers/supabase_provider.dart';
-import '../model/profile.dart';
+import '../model/profile_model.dart';
 
 part 'profile_provider.g.dart';
 
@@ -10,14 +11,15 @@ part 'profile_provider.g.dart';
 class Profile extends _$Profile {
   @override
   FutureOr<ProfileModel> build() async {
-    final userId = ref.read(supabaseProvider).auth.currentSession!.user.id;
+    final userId = ref.watch(supabaseProvider).auth.currentSession!.user.id;
     final data = await ref
         .read(supabaseProvider)
-        .from('profiles')
+        .schema("chats")
+        .from('users')
         .select()
         .eq('id', userId)
         .single();
-    return ProfileModel.fromMap(data);
+    return ProfileModel.fromUser(types.User.fromJson(data));
   }
 
   Future<void> updateProfile(String username, String website) async {

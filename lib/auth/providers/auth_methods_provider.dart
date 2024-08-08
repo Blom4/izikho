@@ -31,17 +31,16 @@ class _AuthMethods extends ChangeNotifier {
   Future<void> register(String username, String email, String password) async {
     try {
       final response = await ref.read(supabaseProvider).auth.signUp(
-        email: email,
-        password: password,
-        data: {
-          'full_name': username,
-        },
-      );
+            email: email,
+            password: password,
+          );
       await SupabaseChatCore.instance.updateUser(
         types.User(
-          firstName: username,
           id: response.user!.id,
-          lastName: "$username-2",
+          metadata: {
+            'email': email,
+            'username': username,
+          },
         ),
       );
     } on AuthException catch (e) {

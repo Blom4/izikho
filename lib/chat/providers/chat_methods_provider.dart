@@ -67,7 +67,8 @@ class ChatMethods {
     }
   }
 
-  void handleMessageVisibilityChanged(types.Message message,bool visible) async {
+  void handleMessageVisibilityChanged(
+      types.Message message, bool visible) async {
     if (message.status != types.Status.seen &&
         message.author.id != SupabaseChatCore.instance.supabaseUser!.id) {
       await SupabaseChatCore.instance.updateMessage(
@@ -106,10 +107,7 @@ class ChatMethods {
           uri: url,
           width: image.width.toDouble(),
         );
-        SupabaseChatCore.instance.sendMessage(
-          message,
-          room.id,
-        );
+        SupabaseChatCore.instance.sendMessage(message, room.id);
       } on PostgrestException catch (e) {
         throw PostgrestException(message: e.message, code: e.code);
       } catch (e) {
@@ -149,9 +147,6 @@ class ChatMethods {
   }
 
   void sendMessage(types.PartialText message) {
-    SupabaseChatCore.instance.sendMessage(
-      message,
-      room.id,
-    );
+    SupabaseChatCore.instance.sendMessage(message, room.id);
   }
 }

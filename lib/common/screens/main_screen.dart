@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_supabase_chat_core/flutter_supabase_chat_core.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../chat/screens/chat_rooms_screen.dart';
@@ -47,8 +48,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      body: widget.child,
+      //extendBody: true,
+      body: UserOnlineStateObserver(child: widget.child),
       drawer: const Drawer(),
       bottomNavigationBar: Responsive.isMobile(context)
           ? CustomBottomAppBar(

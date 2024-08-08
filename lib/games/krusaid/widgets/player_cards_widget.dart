@@ -4,17 +4,25 @@ import 'package:playing_cards/playing_cards.dart';
 
 import '../../../common/responsive/responsive.dart';
 import '../components/play_card.dart';
+import '../models/krusaid_player_model.dart';
 import '../providers/krusaid_player_provider.dart';
 import 'card_widget.dart';
 
-class PlayerCardsWidget extends ConsumerWidget {
+class PlayerCardsWidget extends StatefulHookConsumerWidget {
   const PlayerCardsWidget({
     super.key,
+    required this.player
   });
 
+  final KrusaidPlayerModel player;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final playerProvider = ref.watch(krusaidPlayerProvider);
+  ConsumerState<PlayerCardsWidget> createState() => _PlayerCardsWidgetState();
+}
+
+class _PlayerCardsWidgetState extends ConsumerState<PlayerCardsWidget> {
+@override
+  Widget build(BuildContext context) {
     return FittedBox(
       child: DragTarget<PlayCard>(
           onAcceptWithDetails: (card) {},
@@ -28,23 +36,23 @@ class PlayerCardsWidget extends ConsumerWidget {
                 ),
               ),
               ...List.generate(
-                playerProvider.cards.length,
+                widget.player.cards.length,
                 (index) => Draggable<PlayCard>(
-                  data: playerProvider.cards[index],
+                  data: widget.player.cards[index],
                   childWhenDragging: Container(),
                   feedback: CardWidget(
                     margin: Responsive.isMobile(context)
                         ? (100 * index.toDouble()) / 6
                         : 100 * index.toDouble() * 0.25,
                     size: Responsive.isMobile(context) ? 95 : 100,
-                    card: playerProvider.cards[index],
+                    card: widget.player.cards[index],
                   ),
                   child: CardWidget(
                     margin: Responsive.isMobile(context)
                         ? (100 * index.toDouble()) / 6
                         : 100 * index.toDouble() * 0.25,
                     size: Responsive.isMobile(context) ? 95 : 100,
-                    card: playerProvider.cards[index],
+                    card: widget.player.cards[index],
                   ),
                 ),
               ),

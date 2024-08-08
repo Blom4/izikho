@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/common/utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../providers/auth_provider.dart';
+import '../providers/auth_methods_provider.dart';
 import '../../common/utils/validators/validator.dart';
 import '../../common/widgets/my_button.dart';
 import '../../common/widgets/my_textfield_widget.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../morabaraba/constants/colors.dart';
+import '../../morabaraba/screens/home_screen.dart';
 import '../dialogs/multi_player_dialog.dart';
-import '../providers/socket_methods_provider.dart';
 
 class KrusaidHomeScreen extends HookConsumerWidget {
   static const routename = "krusaid-home-screen";
@@ -61,50 +60,4 @@ class KrusaidHomeScreen extends HookConsumerWidget {
   }
 }
 
-class OptionItem extends StatelessWidget {
-  const OptionItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
 
-  final IconData icon;
-  final String title;
-  final void Function()? onTap;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: InkWell(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          height: 50,
-          padding: const EdgeInsets.all(10),
-          decoration: const BoxDecoration(
-              color: secondaryColor,
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              boxShadow: [
-                BoxShadow(color: shadowColor, spreadRadius: 1.5, blurRadius: 2)
-              ]),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(icon),
-              Text(
-                title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              Icon(icon),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

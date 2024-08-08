@@ -8,9 +8,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/common/utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../auth/model/profile_model.dart';
 import '../providers/chat_messages_provider.dart';
 import '../providers/chat_methods_provider.dart';
 import '../utils/chat_attachment_bottomsheet.dart';
+import '../widgets/user_avatar.dart';
 
 class ChatMessagesScreen extends StatefulHookConsumerWidget {
   const ChatMessagesScreen({
@@ -90,6 +92,10 @@ class _ChatPageState extends ConsumerState<ChatMessagesScreen> {
           AsyncData(:final value) => Chat(
               showUserNames: true,
               showUserAvatars: true,
+              nameBuilder: (user) => Text(ProfileModel.fromUser(user).username),
+              avatarBuilder: (author) => MyUserAvatar(
+                profile: ProfileModel.fromUser(author),
+              ),
               isAttachmentUploading: _isAttachmentUploading.value,
               messages: value,
               onAttachmentPressed: () => showChatAttachmentBottomSheet(
