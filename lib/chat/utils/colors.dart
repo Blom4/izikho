@@ -1,7 +1,4 @@
 import 'dart:ui';
-
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
 import '../../auth/model/profile_model.dart';
 
 const colors = [

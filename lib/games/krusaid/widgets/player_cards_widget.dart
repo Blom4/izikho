@@ -5,7 +5,6 @@ import 'package:playing_cards/playing_cards.dart';
 import '../../../common/responsive/responsive.dart';
 import '../components/play_card.dart';
 import '../models/krusaid_player_model.dart';
-import '../providers/krusaid_player_provider.dart';
 import 'card_widget.dart';
 
 class PlayerCardsWidget extends StatefulHookConsumerWidget {

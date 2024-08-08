@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 
-import '../components/player.dart';
 import 'player_widget.dart';
 
 class PlayersWidget extends StatelessWidget {

@@ -1,5 +1,3 @@
-import 'package:izikho/games/krusaid/models/krusaid_game_model.dart';
-import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 
 import '../../ak47/ak47_screen.dart';
 import '../../casino/casino_screen.dart';
@@ -8,7 +6,6 @@ import '../../fivecards/fivecards_sceen.dart';
 import '../../krusaid/screens/krusaid_game_screen.dart';
 import '../../ludo/ludo_screen.dart';
 import '../../morabaraba/screens/morabaraba_screen.dart';
-import '../utils/utils.dart';
 import 'player_model.dart';
 
 enum GameType {

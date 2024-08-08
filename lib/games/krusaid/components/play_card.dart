@@ -1,6 +1,5 @@
 import 'package:playing_cards/playing_cards.dart';
 
-import '../../common/models/player_model.dart';
 
 class PlayCard {
   // The suit of the card.

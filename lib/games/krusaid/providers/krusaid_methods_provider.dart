@@ -3,7 +3,6 @@ import 'package:playing_cards/playing_cards.dart';
 //import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../components/play_card.dart';
-import '../dialogs/eigtht_dialog.dart';
 import 'krusaid_game_provider.dart';
 //part 'krusaid_methods_provider.g.dart';
 
