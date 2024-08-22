@@ -1,42 +1,103 @@
-import 'package:izikho/games/common/providers/game_provider.dart';
-import 'package:izikho/games/krusaid/models/krusaid_game_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/providers/supabase_provider.dart';
-import '../components/play_card.dart';
+import '../../common/providers/game_provider.dart';
+import '../models/play_card.dart';
+import '../models/krusaid_game_model.dart';
+import '../models/krusaid_player_model.dart';
 
 part 'krusaid_game_provider.g.dart';
 
 @riverpod
 class KrusaidGame extends _$KrusaidGame {
   @override
-  Stream<KrusaidGameModel> build([String? channel]) async* {
-    if (channel == null) {
-      throw Exception('Please provide a channel');
-    }
-    var game =
-        await ref.watch(gameProvider(channel).future) as KrusaidGameModel;
-
-    if (!game.served) {
-      final gameMap = await _supabase.from('games').upsert({
-        'id': game.id,
-        ...game.serveCards(4).copyWith(started: true).toMap(),
-      }).select();
-      game = KrusaidGameModel.fromMap(gameMap.first);
-    }
-    yield game;
+  KrusaidGameState build(KrusaidGameModel game) {
+    final asyncGame = ref.watch(gameProvider(game.id));
+    return asyncGame.when(
+      data: (data) => KrusaidGameState(data: data as KrusaidGameModel),
+      error: (error, stackTrace) =>
+          KrusaidGameState.error(data: game, error: error.toString()),
+      loading: () => KrusaidGameState.loading(data: game),
+    );
   }
 
+  Future<void> serveCards(int numOfCards) async {
+    try {
+      if (!state.data.served && state.data.allJoined) {
+        state = KrusaidGameState.loading(data: game);
+        final res = await _supabase.from('games').upsert({
+          'id': game.id,
+          ...state.data.serveCards(numOfCards).copyWith(started: true).toMap(),
+        }).select();
+        state = KrusaidGameState(data: KrusaidGameModel.fromMap(res.first));
+      }
+    } catch (e) {
+      state = KrusaidGameState.error(error: e.toString(), data: game);
+    }
+  }
 
-  
+  Future<void> play(PlayCard card, Playable playable) async {
+    try {
+      if (state.data.currentPlayer.isTurn) {
+        state = KrusaidGameState.loading(data: state.data);
+        final res = await _supabase.from('games').upsert({
+          'id': game.id,
+          ...state.data.nextPlayState(card, playable).toMap(),
+        }).select();
+        state = KrusaidGameState(data: KrusaidGameModel.fromMap(res.first));
+      }
+    } catch (e) {
+      state = KrusaidGameState.error(data: state.data, error: e.toString());
+    }
+  }
 
-  Future<void> play({required PlayCard card, PlayCard? playable}) async {
-    final game = await future;
-    await _supabase.from('games').upsert({
-      'id': game.id,
-      ...game.nextState(card: card, playable: playable).toMap(),
-    }).select();
+  void popDeck() {
+    if (state.data.currentPlayer.isTurn) {
+      state = KrusaidGameState(data: state.data.nextDeckState());
+    }
+  }
+
+  Future<void> acceptShot(KrusaidPlayerModel shotPlayer) async {
+    try {
+      if (state.data.currentPlayer.isTurn) {
+        state = KrusaidGameState.loading(data: state.data);
+        final res = await _supabase.from('games').upsert({
+          'id': game.id,
+          ...state.data.nextShotState(shotPlayer).toMap(),
+        }).select();
+        state = KrusaidGameState(data: KrusaidGameModel.fromMap(res.first));
+      }
+    } catch (e) {
+      state = KrusaidGameState.error(data: state.data, error: e.toString());
+    }
+  }
+
+  Future<void> playDeck() async {
+    try {
+      if (state.data.currentPlayer.isTurn) {
+        state = KrusaidGameState.loading(data: state.data);
+        final nextPlayer = state.data.getNextPlayer();
+        final res = await _supabase.from('games').upsert({
+          'id': game.id,
+          ...state.data.copyWith(
+            turnIndex: nextPlayer.index,
+            players: [
+              for (var player in state.data.players)
+                if (player.index == nextPlayer.index)
+                  nextPlayer
+                else if (player.isTurn)
+                  player.copyWith(isTurn: false)
+                else
+                  player
+            ],
+          ).toMap(),
+        }).select();
+        state = KrusaidGameState(data: KrusaidGameModel.fromMap(res.first));
+      }
+    } catch (e) {
+      state = KrusaidGameState.error(data: state.data, error: e.toString());
+    }
   }
 
   SupabaseClient get _supabase => ref.read(supabaseProvider);

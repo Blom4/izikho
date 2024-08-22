@@ -2,17 +2,50 @@ import 'package:playing_cards/playing_cards.dart';
 
 import '../../common/models/game_model.dart';
 import '../../common/models/player_model.dart';
-import '../components/play_card.dart';
+import 'play_card.dart';
 import 'krusaid_player_model.dart';
+
+class KrusaidGameState {
+  final KrusaidGameModel data;
+  final bool loading;
+  final String? error;
+
+  KrusaidGameState({
+    required this.data,
+    this.loading = false,
+    this.error,
+  });
+  KrusaidGameState.loading({
+    this.loading = true,
+    required this.data,
+    this.error,
+  });
+  KrusaidGameState.error({
+    required this.error,
+    required this.data,
+    this.loading = false,
+  });
+
+  @override
+  bool operator ==(covariant KrusaidGameState other) {
+    if (identical(this, other)) return true;
+
+    return other.data == data &&
+        other.loading == loading &&
+        other.error == error;
+  }
+
+  @override
+  int get hashCode => data.hashCode ^ loading.hashCode ^ error.hashCode;
+}
 
 class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   final List<PlayCard> playedCards;
   final List<PlayCard> deck;
-  final PlayCard? playableCard;
   final int turnIndex;
-  //final int numOfPlayers;
-  bool direction;
   final bool served;
+  bool direction;
+  Playable playable;
 
   KrusaidGameModel({
     super.id,
@@ -25,65 +58,10 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     required this.deck,
     this.playedCards = const [],
     this.turnIndex = 0,
-    this.playableCard,
-    //this.numOfPlayers = 3,
+    this.playable = Playable.any,
     this.direction = true,
     this.served = false,
   });
-
-  @override
-  KrusaidGameModel copyWith({
-    String? id,
-    String? profileId,
-    GameType? gameType,
-    List<KrusaidPlayerModel>? players,
-    bool? started,
-    bool? gameOver,
-    PlayerModel? turn,
-    List<PlayCard>? playedCards,
-    List<PlayCard>? deck,
-    PlayCard? playableCard,
-    int? turnIndex,
-    //int? numOfPlayers,
-    bool? direction,
-    bool? served,
-  }) {
-    return KrusaidGameModel(
-      id: id ?? this.id,
-      profileId: profileId ?? this.profileId,
-      gameType: gameType ?? this.gameType,
-      players: players ?? this.players,
-      started: started ?? this.started,
-      gameOver: gameOver ?? this.gameOver,
-      turn: turn ?? this.turn,
-      playedCards: playedCards ?? this.playedCards,
-      deck: deck ?? this.deck,
-      playableCard: playableCard ?? this.playableCard,
-      turnIndex: turnIndex ?? this.turnIndex,
-      //numOfPlayers: numOfPlayers ?? this.numOfPlayers,
-      direction: direction ?? this.direction,
-      served: served ?? this.served,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'game_type': gameType.name,
-      'players': players.map((x) => x.toMap()).toList(),
-      'started': started,
-      'game_over': gameOver,
-      'turn': turn?.toMap(),
-      'extra_props': {
-        'played_cards': playedCards.map((x) => x.toMap()).toList(),
-        'deck': deck.map((x) => x.toMap()).toList(),
-        'playable_card': playableCard?.toMap(),
-        'turn_index': turnIndex,
-        'direction': direction,
-        'served': served,
-      }
-    };
-  }
 
   factory KrusaidGameModel.fromMap(Map<String, dynamic> map) {
     final extra = map['extra_props'] as Map<String, dynamic>;
@@ -110,19 +88,95 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
           (x) => PlayCard.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      playableCard: extra['playable_card'] != null
-          ? PlayCard.fromMap(extra['playable_card'] as Map<String, dynamic>)
-          : null,
+      playable: Playable.values.firstWhere((e) => e.name == extra['playable']),
       turnIndex: extra['turn_index'] as int,
-      //numOfPlayers: extra['num_of_players'] as int,
       direction: extra['direction'] as bool,
       served: extra['served'] as bool,
     );
   }
 
   @override
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'game_type': gameType.name,
+      'players': players.map((x) => x.toMap()).toList(),
+      'started': started,
+      'game_over': gameOver,
+      'turn': turn?.toMap(),
+      'extra_props': {
+        'played_cards': playedCards.map((x) => x.toMap()).toList(),
+        'deck': deck.map((x) => x.toMap()).toList(),
+        'playable': playable.name,
+        'turn_index': turnIndex,
+        'direction': direction,
+        'served': served,
+      }
+    };
+  }
+
+  @override
+  KrusaidGameModel copyWith({
+    String? id,
+    String? profileId,
+    GameType? gameType,
+    List<KrusaidPlayerModel>? players,
+    bool? started,
+    bool? gameOver,
+    PlayerModel? turn,
+    List<PlayCard>? playedCards,
+    List<PlayCard>? deck,
+    Playable? playable,
+    int? turnIndex,
+    bool? direction,
+    bool? served,
+  }) {
+    return KrusaidGameModel(
+      id: id ?? this.id,
+      profileId: profileId ?? this.profileId,
+      gameType: gameType ?? this.gameType,
+      players: players ?? this.players,
+      started: started ?? this.started,
+      gameOver: gameOver ?? this.gameOver,
+      turn: turn ?? this.turn,
+      playedCards: playedCards ?? this.playedCards,
+      deck: deck ?? this.deck,
+      playable: playable ?? this.playable,
+      turnIndex: turnIndex ?? this.turnIndex,
+      direction: direction ?? this.direction,
+      served: served ?? this.served,
+    );
+  }
+
+  @override
   String toString() {
-    return 'KrusaidGameModel(playedCards: $playedCards, deck: $deck, playableCard: $playableCard, turnIndex: $turnIndex, numOfPlayers: $numOfPlayers, direction: $direction, served: $served)';
+    return 'KrusaidGameModel(playedCards: $playedCards, deck: $deck, playable: $playable, turnIndex: $turnIndex, numOfPlayers: $numOfPlayers, direction: $direction, served: $served)';
+  }
+
+  @override
+  KrusaidPlayerModel get currentPlayer {
+    return players.firstWhere(
+      (e) => e.id == profileId,
+      orElse: () => KrusaidPlayerModel(
+        id: 'No Id',
+        username: 'No player',
+        index: -1,
+      ),
+    );
+  }
+
+  @override
+  KrusaidPlayerModel get winner => players.firstWhere(
+        (e) => gameOver && e.cards.isEmpty,
+        orElse: () => KrusaidPlayerModel(
+          id: 'No Id',
+          username: 'No player',
+          index: -1,
+        ),
+      );
+
+  @override
+  List<KrusaidPlayerModel> get otherPlayers {
+    return players.where((e) => e.id != profileId).toList();
   }
 
   void shuffleDeck() {
@@ -153,62 +207,26 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     throw Exception('Room already served');
   }
 
-  @override
-  KrusaidPlayerModel get currentPlayer {
-    return players.firstWhere(
-      (e) => e.id == profileId,
-      orElse: () => KrusaidPlayerModel(
-        id: 'No Id',
-        username: 'No player',
-        index: -1,
-      ),
-    );
-  }
-
-  @override
-  List<KrusaidPlayerModel> get otherPlayers {
-    return players.where((e) => e.id != profileId).toList();
-  }
-
-  // void handleDeckCard(PlayCard card) {
-  //   state.players[_currentIndex] = state.players[_currentIndex].copyWith(
-  //     cards: [
-  //       ...state.players[_currentIndex].cards,
-  //       card,
-  //     ],
-  //   );
-  //   state.deck.remove(card);
-  //   state = state.copyWith(
-  //    // me: state.players[_currentIndex],
-  //    // turn: state.players[_currentIndex],
-  //   );
-  //   updateRoom();
-  // }
-  KrusaidGameModel nextDeckState() {
-    PlayCard topDeckCard = deck.removeLast();
-    return copyWith(
-      players: [
-        for (var player in players)
-          if (player.isTurn)
-            player.copyWith(cards: [...player.cards, topDeckCard])
-          else
-            player
-      ],
-    );
-  }
-
-  KrusaidGameModel nextState({required PlayCard card, PlayCard? playable}) {
+  KrusaidGameModel nextPlayState(PlayCard card, Playable playable) {
     if (card.value == CardValue.jack) {
       direction = !direction;
     }
 
+    if (card.suit == Suit.joker && playable == Playable.any) {
+      this.playable = playable;
+    }
+
     KrusaidPlayerModel me = _getCurrentPlayer(card);
-    KrusaidPlayerModel nextPlayer = _nextPlayer(card);
+    KrusaidPlayerModel nextPlayer = getNextPlayer(card);
+
+    if (me.cards.isEmpty) {
+      gameOver = true;
+    }
 
     return copyWith(
       playedCards: [...playedCards, card],
       turnIndex: nextPlayer.index,
-      playableCard: playable ?? card,
+      playable: playable,
       players: players.map((e) {
         if (e.index == nextPlayer.index) {
           if (me.index == nextPlayer.index) {
@@ -228,28 +246,53 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     );
   }
 
-  bool isPlayable(PlayCard card) {
-    return playableCard == null ||
-        playableCard!.suit == Suit.joker ||
-        card.value == CardValue.eight ||
-        card.suit == Suit.joker ||
-        playableCard!.suit == card.suit ||
-        playableCard!.value == card.value;
+  KrusaidGameModel nextDeckState() {
+    PlayCard topDeckCard = deck.removeLast();
+
+    return copyWith(
+      players: [
+        for (var player in players)
+          if (player.isTurn)
+            player.copyWith(cards: [...player.cards, topDeckCard])
+          else
+            player
+      ],
+    );
   }
 
-  KrusaidPlayerModel get turnPlayer => players[turnIndex];
+  KrusaidGameModel nextShotState(KrusaidPlayerModel shotPlayer) {
+    KrusaidPlayerModel nextPlayer = getNextPlayer();
+    final List<PlayCard> takenCards = [];
+    for (int i = 0; i < shotPlayer.cardsToTake; i++) {
+      takenCards.add(deck.removeLast());
+    }
+    return copyWith(
+      turnIndex: nextPlayer.index,
+      players: [
+        for (final player in players)
+          if (player.index == shotPlayer.index)
+            shotPlayer.copyWith(
+              isTurn: false,
+              isShot: false,
+              cardsToTake: 0,
+              cards: [...shotPlayer.cards, ...takenCards],
+            )
+          else if (player.index == nextPlayer.index)
+            nextPlayer
+          else
+            player
+      ],
+    );
+  }
 
-  KrusaidPlayerModel _getCurrentPlayer(PlayCard card) => currentPlayer.copyWith(
-        isTurn: false,
+  KrusaidPlayerModel getNextPlayer([PlayCard? card]) {
+    if (card == null) {
+      return players[_nextIndex].copyWith(
         isShot: false,
+        isTurn: true,
         cardsToTake: 0,
-        cards: players[_currentIndex]
-            .cards
-            .where((element) => element != card)
-            .toList(),
       );
-
-  KrusaidPlayerModel _nextPlayer(PlayCard card) {
+    }
     switch (card.value) {
       case CardValue.two:
         return players[_nextIndex].copyWith(
@@ -259,7 +302,14 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
               : 2,
           isTurn: true,
         );
-      case CardValue.joker_1 || CardValue.joker_2:
+      case (CardValue.joker_1 || CardValue.joker_2):
+        if (playable != Playable.any) {
+          return players[_nextIndex].copyWith(
+            isShot: false,
+            isTurn: true,
+            cardsToTake: 0,
+          );
+        }
         return players[_nextIndex].copyWith(
           isShot: true,
           cardsToTake: players[_currentIndex].isShot
@@ -289,6 +339,26 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
         );
     }
   }
+
+  KrusaidPlayerModel _getCurrentPlayer(PlayCard card) => currentPlayer.copyWith(
+        isTurn: false,
+        isShot: false,
+        cardsToTake: 0,
+        cards: players[_currentIndex]
+            .cards
+            .where((element) => element != card)
+            .toList(),
+      );
+
+  bool isPlayable(PlayCard card) {
+    return playable == Playable.any ||
+        card.value == CardValue.eight ||
+        card.suit == Suit.joker ||
+        playable.suit == card.suit ||
+        playedCards.last.value == card.value;
+  }
+
+  KrusaidPlayerModel get turnPlayer => players[turnIndex];
 
   int get _currentIndex => turnIndex;
 

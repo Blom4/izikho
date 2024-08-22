@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:izikho/games/krusaid/models/krusaid_game_model.dart';
+import 'package:izikho/games/krusaid/dialogs/deck_dialog.dart';
+import 'package:izikho/games/krusaid/dialogs/eigtht_dialog.dart';
+import 'package:izikho/games/krusaid/dialogs/joker_dialog.dart';
+import 'package:izikho/games/krusaid/dialogs/shot_dialog.dart';
+import 'package:playing_cards/playing_cards.dart';
 
 import '../../../common/responsive/responsive.dart';
+import '../../../common/screens/home_screen.dart';
+import '../../common/providers/game_provider.dart';
+import '../models/play_card.dart';
+import '../models/krusaid_game_model.dart';
+import '../models/krusaid_player_model.dart';
+import '../providers/krusaid_game_provider.dart';
 import '../widgets/custom_bottom_appbar.dart';
-import '../widgets/player_cards_widget.dart';
-import '../widgets/players_widget.dart';
-import '../widgets/playground_widget.dart';
+import '../widgets/krusaid_game_widget.dart';
 
 class KrusaidGameScreen extends StatefulHookConsumerWidget {
   const KrusaidGameScreen({super.key, required this.game});
@@ -18,10 +27,111 @@ class KrusaidGameScreen extends StatefulHookConsumerWidget {
 }
 
 class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
- 
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(gameProvider(widget.game.id).future, (_, next) async {
+      var game = await next as KrusaidGameModel;
+      if (game.currentPlayer.isTurn && game.currentPlayer.isShot) {
+        await handleShot(game.currentPlayer);
+      }
+    });
+    Future(
+      () => ref.read(krusaidGameProvider(widget.game).notifier).serveCards(4),
+    );
+  }
 
-@override
+  Future<void> handlePlayCard(PlayCard card) async {
+    final game = ref.read(krusaidGameProvider(widget.game)).data;
+    if (!game.currentPlayer.isTurn) {
+      return;
+    }
+    if (game.isPlayable(card)) {
+      final gameNotifier = ref.read(krusaidGameProvider(widget.game).notifier);
+      switch (card.value) {
+        case CardValue.eight:
+          final playable = await context.showEightDialog();
+          if (playable != null) {
+            await gameNotifier.play(card, playable);
+          }
+          break;
+        case CardValue.joker_1 || CardValue.joker_2:
+          final isJocker = await context.showJokerDialog();
+          if (isJocker != null) {
+            if (isJocker) {
+              await gameNotifier.play(card, Playable.any);
+            } else {
+              if (mounted) {
+                final playable = await context.showEightDialog();
+                if (playable != null) {
+                  await gameNotifier.play(card, playable);
+                }
+              }
+            }
+          }
+          break;
+        default:
+          final playable = Playable.values.firstWhere(
+            (e) => e.suit == card.suit,
+          );
+          await gameNotifier.play(card, playable);
+      }
+    }
+  }
+
+  void handleDeckCard(PlayCard card) async {
+    final game = ref.read(krusaidGameProvider(widget.game)).data;
+    if (!game.currentPlayer.isTurn) {
+      return;
+    }
+
+    final playableCards = [
+      card,
+      ...game.currentPlayer.cards,
+    ].where((e) => game.isPlayable(e)).toList();
+
+    final gameNotifier = ref.read(krusaidGameProvider(widget.game).notifier);
+    gameNotifier.popDeck();
+    if (playableCards.isEmpty) {
+      await gameNotifier.playDeck();
+    } else {
+      final deckCard = await context.showDeckDialog(playableCards);
+      if (deckCard == null) {
+        await gameNotifier.playDeck();
+      } else {
+        await handlePlayCard(deckCard);
+      }
+    }
+  }
+
+  Future<void> handleShot(KrusaidPlayerModel player) async {
+    final gameNotifier = ref.read(krusaidGameProvider(widget.game).notifier);
+    final gunCards = player.cards
+        .where(
+          (e) => e.suit == Suit.joker || e.value == CardValue.two,
+        )
+        .toList();
+
+    if (gunCards.isEmpty) {
+      await gameNotifier.acceptShot(player);
+    } else {
+      final gunCard = await context.showShotDialog(gunCards);
+      if (gunCard == null) {
+        await gameNotifier.acceptShot(player);
+      } else {
+        gunCard.suit == Suit.joker
+            ? await gameNotifier.play(gunCard, Playable.any)
+            : await gameNotifier.play(
+                gunCard,
+                Playable.values.firstWhere((e) => e.suit == gunCard.suit),
+              );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final gameState = ref.watch(krusaidGameProvider(widget.game));
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -47,35 +157,45 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
         ),
         bottomNavigationBar:
             !Responsive.isMobile(context) ? null : const CustomBottomAppBar(),
-        body: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  PlayersWidget(players: widget.game.players),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: PlayGroundWidget(game: widget.game),
-                        ),
-                        Expanded(
-                          flex: Responsive.isMobile(context) ? 3 : 4,
-                          child: PlayerCardsWidget(player: widget.game.currentPlayer),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!Responsive.isMobile(context)) const CustomBottomAppBar()
-                ],
-              ),
+        body: Stack(
+          children: [
+            KrusaidGameWidget(
+              game: gameState.data,
+              onDeckCard: handleDeckCard,
+              onPlayCard: handlePlayCard,
             ),
-          ),
+            if (gameState.loading)
+              const Dialog.fullscreen(
+                backgroundColor: Colors.black45,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            if (gameState.error != null)
+              Dialog.fullscreen(
+                backgroundColor: Colors.black45,
+                child: AlertDialog(
+                  content: Text(gameState.error!),
+                ),
+              ),
+            if (gameState.data.gameOver)
+              Dialog.fullscreen(
+                backgroundColor: Colors.black45,
+                child: AlertDialog(
+                  title: const Text('Game Over'),
+                  content: Text(
+                      "${gameState.data.currentPlayer.id == gameState.data.winner.id ? 'You' : gameState.data.winner.username} won"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text("Play Again"),
+                    ),
+                    TextButton(
+                      onPressed: () => context.goNamed(HomeScreen.routename),
+                      child: const Text("Quit"),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );

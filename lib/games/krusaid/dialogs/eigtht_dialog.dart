@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../components/mapped_suits.dart';
+import '../models/play_card.dart';
 
 extension EightDialog on BuildContext {
-  Future<MappedSuit?> showEightDialog() => showDialog<MappedSuit>(
+  Future<Playable?> showEightDialog() => showDialog<Playable>(
         context: this,
         barrierDismissible: false,
         builder: (context) {
@@ -18,19 +18,19 @@ extension EightDialog on BuildContext {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    for (int i = 0; i < mappedSuits.length; i++)
+                    for (int i = 1; i < Playable.values.length; i++)
                       InkWell(
-                        onTap: () =>
-                            Navigator.pop<MappedSuit>(context, mappedSuits[i]),
+                        onTap: () => Navigator.pop<Playable>(
+                            context, Playable.values[i]),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(100)),
                         child: CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Center(
                             child: Text(
-                              mappedSuits[i].symbol,
+                              Playable.values[i].symbol,
                               style: TextStyle(
-                                color: mappedSuits[i].color,
+                                color: Playable.values[i].color,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
                               ),

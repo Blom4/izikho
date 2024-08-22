@@ -62,8 +62,8 @@ abstract class GameModel<T extends PlayerModel> {
   final GameType gameType;
   final List<T> players;
   final bool started;
-  final bool gameOver;
   final PlayerModel? turn;
+  bool gameOver;
 
   GameModel({
     this.id,
@@ -79,7 +79,9 @@ abstract class GameModel<T extends PlayerModel> {
 
   Map<String, dynamic> toMap();
 
-  T get currentPlayer; 
+  T get currentPlayer;
+
+  T get winner; 
 
   List<T> get otherPlayers;
 

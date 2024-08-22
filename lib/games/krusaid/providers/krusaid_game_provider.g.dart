@@ -6,7 +6,7 @@ part of 'krusaid_game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$krusaidGameHash() => r'9871909696b939a4e1d6da1cc86363b2c5e3b7c7';
+String _$krusaidGameHash() => r'e2e33bdc19914098b41c659a2465985d984ff922';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -30,12 +30,12 @@ class _SystemHash {
 }
 
 abstract class _$KrusaidGame
-    extends BuildlessAutoDisposeStreamNotifier<KrusaidGameModel> {
-  late final String? channel;
+    extends BuildlessAutoDisposeNotifier<KrusaidGameState> {
+  late final KrusaidGameModel game;
 
-  Stream<KrusaidGameModel> build([
-    String? channel,
-  ]);
+  KrusaidGameState build(
+    KrusaidGameModel game,
+  );
 }
 
 /// See also [KrusaidGame].
@@ -43,16 +43,16 @@ abstract class _$KrusaidGame
 const krusaidGameProvider = KrusaidGameFamily();
 
 /// See also [KrusaidGame].
-class KrusaidGameFamily extends Family<AsyncValue<KrusaidGameModel>> {
+class KrusaidGameFamily extends Family<KrusaidGameState> {
   /// See also [KrusaidGame].
   const KrusaidGameFamily();
 
   /// See also [KrusaidGame].
-  KrusaidGameProvider call([
-    String? channel,
-  ]) {
+  KrusaidGameProvider call(
+    KrusaidGameModel game,
+  ) {
     return KrusaidGameProvider(
-      channel,
+      game,
     );
   }
 
@@ -61,7 +61,7 @@ class KrusaidGameFamily extends Family<AsyncValue<KrusaidGameModel>> {
     covariant KrusaidGameProvider provider,
   ) {
     return call(
-      provider.channel,
+      provider.game,
     );
   }
 
@@ -81,13 +81,13 @@ class KrusaidGameFamily extends Family<AsyncValue<KrusaidGameModel>> {
 }
 
 /// See also [KrusaidGame].
-class KrusaidGameProvider extends AutoDisposeStreamNotifierProviderImpl<
-    KrusaidGame, KrusaidGameModel> {
+class KrusaidGameProvider
+    extends AutoDisposeNotifierProviderImpl<KrusaidGame, KrusaidGameState> {
   /// See also [KrusaidGame].
-  KrusaidGameProvider([
-    String? channel,
-  ]) : this._internal(
-          () => KrusaidGame()..channel = channel,
+  KrusaidGameProvider(
+    KrusaidGameModel game,
+  ) : this._internal(
+          () => KrusaidGame()..game = game,
           from: krusaidGameProvider,
           name: r'krusaidGameProvider',
           debugGetCreateSourceHash:
@@ -97,7 +97,7 @@ class KrusaidGameProvider extends AutoDisposeStreamNotifierProviderImpl<
           dependencies: KrusaidGameFamily._dependencies,
           allTransitiveDependencies:
               KrusaidGameFamily._allTransitiveDependencies,
-          channel: channel,
+          game: game,
         );
 
   KrusaidGameProvider._internal(
@@ -107,17 +107,17 @@ class KrusaidGameProvider extends AutoDisposeStreamNotifierProviderImpl<
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.channel,
+    required this.game,
   }) : super.internal();
 
-  final String? channel;
+  final KrusaidGameModel game;
 
   @override
-  Stream<KrusaidGameModel> runNotifierBuild(
+  KrusaidGameState runNotifierBuild(
     covariant KrusaidGame notifier,
   ) {
     return notifier.build(
-      channel,
+      game,
     );
   }
 
@@ -126,49 +126,49 @@ class KrusaidGameProvider extends AutoDisposeStreamNotifierProviderImpl<
     return ProviderOverride(
       origin: this,
       override: KrusaidGameProvider._internal(
-        () => create()..channel = channel,
+        () => create()..game = game,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        channel: channel,
+        game: game,
       ),
     );
   }
 
   @override
-  AutoDisposeStreamNotifierProviderElement<KrusaidGame, KrusaidGameModel>
+  AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
       createElement() {
     return _KrusaidGameProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is KrusaidGameProvider && other.channel == channel;
+    return other is KrusaidGameProvider && other.game == game;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, channel.hashCode);
+    hash = _SystemHash.combine(hash, game.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-mixin KrusaidGameRef on AutoDisposeStreamNotifierProviderRef<KrusaidGameModel> {
-  /// The parameter `channel` of this provider.
-  String? get channel;
+mixin KrusaidGameRef on AutoDisposeNotifierProviderRef<KrusaidGameState> {
+  /// The parameter `game` of this provider.
+  KrusaidGameModel get game;
 }
 
 class _KrusaidGameProviderElement
-    extends AutoDisposeStreamNotifierProviderElement<KrusaidGame,
-        KrusaidGameModel> with KrusaidGameRef {
+    extends AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
+    with KrusaidGameRef {
   _KrusaidGameProviderElement(super.provider);
 
   @override
-  String? get channel => (origin as KrusaidGameProvider).channel;
+  KrusaidGameModel get game => (origin as KrusaidGameProvider).game;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

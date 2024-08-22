@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:izikho/common/utils/snackbar.dart';
-import 'package:izikho/games/krusaid/dialogs/eigtht_dialog.dart';
-import 'package:izikho/games/krusaid/dialogs/joker_dialog.dart';
-import 'package:playing_cards/playing_cards.dart';
 
 import '../../../common/responsive/responsive.dart';
-import '../components/play_card.dart';
-import '../models/krusaid_game_model.dart';
-import '../providers/krusaid_game_provider.dart';
+import '../models/play_card.dart';
 import 'card_widget.dart';
 
-class PlayGroundWidget extends StatelessWidget {
+class PlayGroundWidget extends HookConsumerWidget {
   const PlayGroundWidget({
     super.key,
-    required this.game,
+    required this.deckWidget,
+    required this.playedCardsWidget,
+    required this.infoWidget,
   });
-  final KrusaidGameModel game;
+
+  final DeckWidget deckWidget;
+  final PlayedCardsWidget playedCardsWidget;
+  final InfoWidget infoWidget;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       constraints: const BoxConstraints(maxWidth: 250),
       child: Column(
         children: [
           if (Responsive.isDesktop(context)) const SizedBox(height: 30),
-          InfoWidget(
-            numOfDeckCards: game.deckCount,
-            turnPlayerName: game.turnPlayer.username,
-          ),
+          infoWidget,
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -36,13 +32,11 @@ class PlayGroundWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: DeckWidget(deckCards: game.deck),
+                    child: deckWidget,
                   ),
                   const SizedBox(width: 20),
                   Expanded(
-                    child: PlayedCardsWidget(
-                      game: game,
-                    ),
+                    child: playedCardsWidget,
                   ),
                 ],
               ),
@@ -54,75 +48,20 @@ class PlayGroundWidget extends StatelessWidget {
   }
 }
 
-class PlayedCardsWidget extends StatefulHookConsumerWidget {
+class PlayedCardsWidget extends HookConsumerWidget {
   const PlayedCardsWidget({
     super.key,
-    required this.game,
+    required this.playedCards,
+    required this.onPlayCard,
   });
-  final KrusaidGameModel game;
+  final List<PlayCard> playedCards;
+  final void Function(PlayCard) onPlayCard;
 
   @override
-  ConsumerState<PlayedCardsWidget> createState() => _PlayedCardsWidgetState();
-}
-
-class _PlayedCardsWidgetState extends ConsumerState<PlayedCardsWidget> {
-  //bool _loading =false;
-  Future<void> play(PlayCard card) async {
-    if (widget.game.isPlayable(card)) {
-      try {
-        switch (card.value) {
-          case CardValue.eight:
-            final playable = await context.showEightDialog();
-            if (playable != null) {
-              await ref.read(krusaidGameProvider(widget.game.id).notifier).play(
-                    card: card,
-                    playable: PlayCard(playable.suit, card.value),
-                  );
-            }
-            break;
-          case CardValue.joker_1 || CardValue.joker_2:
-            final isJoker = await context.showJokerDialog();
-            if (isJoker != null) {
-              if (isJoker) {
-                await ref
-                    .read(krusaidGameProvider(widget.game.id).notifier)
-                    .play(
-                      card: card,
-                      playable: card,
-                    );
-              } else {
-                if (mounted) {
-                  final playable = await context.showEightDialog();
-                  if (playable != null) {
-                    await ref
-                        .read(krusaidGameProvider(widget.game.id).notifier)
-                        .play(
-                          card: card,
-                          playable: PlayCard(playable.suit, card.value),
-                        );
-                  }
-                }
-              }
-            }
-            break;
-          default:
-            await ref
-                .read(krusaidGameProvider(widget.game.id).notifier)
-                .play(card: card);
-            break;
-        }
-      } catch (e) {
-        if (mounted) {
-          context.showSnackBar(e.toString());
-        }
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DragTarget<PlayCard>(
-        onAcceptWithDetails: (details) async => await play(details.data),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DragTarget<({bool isDeckCard, PlayCard card})>(
+        onAcceptWithDetails: (details) async => onPlayCard(details.data.card),
+        onWillAcceptWithDetails: (details) => !details.data.isDeckCard,
         builder: (context, candidateData, rejectedData) {
           return Stack(
             fit: StackFit.passthrough,
@@ -138,7 +77,7 @@ class _PlayedCardsWidgetState extends ConsumerState<PlayedCardsWidget> {
                   child: const Text("PLAY HERE"),
                 ),
               ),
-              for (PlayCard card in widget.game.playedCards)
+              for (PlayCard card in playedCards)
                 CardWidget(
                   card: card,
                 )
@@ -148,22 +87,19 @@ class _PlayedCardsWidgetState extends ConsumerState<PlayedCardsWidget> {
   }
 }
 
-class DeckWidget extends StatelessWidget {
-  const DeckWidget({
-    super.key,
-    required this.deckCards,
-  });
-  final List<PlayCard> deckCards;
+class DeckWidget extends HookConsumerWidget {
+  const DeckWidget({super.key, required this.deck});
+  final List<PlayCard> deck;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Stack(
       fit: StackFit.passthrough,
       alignment: Alignment.center,
       children: [
-        for (PlayCard card in deckCards)
-          Draggable<PlayCard>(
-            data: card,
+        for (PlayCard card in deck)
+          Draggable<({bool isDeckCard, PlayCard card})>(
+            data: (isDeckCard: true, card: card),
             feedback: CardWidget(
               card: card,
               showBack: true,
@@ -183,11 +119,12 @@ class InfoWidget extends StatelessWidget {
     super.key,
     required this.numOfDeckCards,
     required this.turnPlayerName,
+    required this.playable,
   });
 
   final int numOfDeckCards;
   final String turnPlayerName;
-  //final nextAllowedCards;
+  final Playable playable;
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +173,7 @@ class InfoWidget extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               Text(
-                "(♥)",
+                playable.symbol,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge

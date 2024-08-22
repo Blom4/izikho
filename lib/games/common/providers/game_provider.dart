@@ -6,7 +6,7 @@ import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../krusaid/components/deck.dart';
+import '../../krusaid/models/deck.dart';
 import '../../krusaid/models/krusaid_game_model.dart';
 import '../models/game_model.dart';
 import '../utils/utils.dart';

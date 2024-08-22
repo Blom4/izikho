@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../morabaraba/screens/home_screen.dart';
-import '../dialogs/multi_player_dialog.dart';
+import '../dialogs/shot_dialog.dart';
 
 class KrusaidHomeScreen extends HookConsumerWidget {
   static const routename = "krusaid-home-screen";
@@ -30,13 +30,7 @@ class KrusaidHomeScreen extends HookConsumerWidget {
             OptionItem(
               icon: Icons.people_outline_outlined,
               title: "Multi Player",
-              onTap: () => showMultiPlayerDialog(context).then((value) {
-                // if (value != null) {
-                //   value
-                //       ? ref.read(socketMethodsProvider(context)).createRoom()
-                //       : ref.read(socketMethodsProvider(context)).joinRoom();
-                //}
-              }),
+              onTap: () => {},
             ),
             OptionItem(
               icon: Icons.save_alt,
@@ -59,5 +53,3 @@ class KrusaidHomeScreen extends HookConsumerWidget {
     );
   }
 }
-
-

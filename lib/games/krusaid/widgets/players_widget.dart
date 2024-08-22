@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../models/krusaid_player_model.dart';
 import 'player_widget.dart';
 
-class PlayersWidget extends StatelessWidget {
+class PlayersWidget extends HookConsumerWidget {
   const PlayersWidget({
     super.key,
     required this.players,
@@ -11,12 +12,12 @@ class PlayersWidget extends StatelessWidget {
   final List<KrusaidPlayerModel> players;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return FittedBox(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (KrusaidPlayerModel player in players)
+          for (final player in players)
             PlayerWidget(
               player: player,
             ),

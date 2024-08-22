@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../auth/model/profile_model.dart';
 import '../../common/models/player_model.dart';
-import '../components/play_card.dart';
+import 'play_card.dart';
 
 class KrusaidPlayerModel extends PlayerModel {
   static const playerType = PlayerType.krusaid;

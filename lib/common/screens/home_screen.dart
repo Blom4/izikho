@@ -6,7 +6,7 @@ import '../../auth/providers/auth_methods_provider.dart';
 import '../../auth/providers/profile_provider.dart';
 import '../../chat/widgets/user_avatar.dart';
 import '../../games/common/screens/notifications_screen.dart';
-import '../../games/common/screens/game_invite_screen.dart';
+import '../../games/common/screens/game_start_screen.dart';
 import '../../games/common/widgets/recent_notifications.dart';
 import '../widgets/my_button.dart';
 import '../widgets/online_friends_widget.dart';
@@ -95,7 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       MyButtonWidget(
                         label: "Start Game",
                         onPressed: () =>
-                            context.pushNamed(GameInviteScreen.routename),
+                            context.pushNamed(GameStartScreen.routename),
                       ),
                     ],
                   ),

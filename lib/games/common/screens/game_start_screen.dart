@@ -17,17 +17,17 @@ import '../models/game_options.dart';
 import '../widgets/game_search_widget.dart';
 import '../widgets/player_search_widget.dart';
 
-class GameInviteScreen extends StatefulHookConsumerWidget {
-  static const routename = 'game_invite_screen';
-  const GameInviteScreen({super.key});
+class GameStartScreen extends StatefulHookConsumerWidget {
+  static const routename = 'game_start_screen';
+  const GameStartScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _GameInviteScreenState();
+      _GameStartScreenState();
 }
 
-class _GameInviteScreenState extends ConsumerState<GameInviteScreen> {
-  Future<void> invite(
+class _GameStartScreenState extends ConsumerState<GameStartScreen> {
+  Future<void> startGame(
     GameType gameType,
     List<ProfileModel> recipients,
     String message,
@@ -227,7 +227,7 @@ class _GameInviteScreenState extends ConsumerState<GameInviteScreen> {
               if (selectedGame.value != null)
                 MyButtonWidget(
                   label: "Invite Players",
-                  onPressed: () => invite(
+                  onPressed: () async => await startGame(
                     selectedGame.value!,
                     selectedPlayers.value,
                     "invites you to join the ${selectedGame.value!.name} game",

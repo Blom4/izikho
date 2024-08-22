@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
-import '../components/play_card.dart';
+import '../models/play_card.dart';
 
 class CardWidget extends StatelessWidget {
   const CardWidget({
