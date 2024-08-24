@@ -5,6 +5,7 @@ import 'package:izikho/common/utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/game_notification.dart';
+import '../providers/game_notifications_provider.dart';
 import '../providers/game_provider.dart';
 import '../screens/waiting_screen.dart';
 
@@ -22,6 +23,9 @@ class NotificationList extends StatefulHookConsumerWidget {
 class _NotificationListState extends ConsumerState<NotificationList> {
   Future<void> joinGame(GameNotificationModel notification) async {
     try {
+      await ref
+          .read(gameNotificationsProvider.notifier)
+          .viewNotification(notification);
       await ref.read(gameProvider().notifier).joinGame(notification.gameId);
       if (mounted) {
         context.goNamed(WaitingScreen.routename, extra: notification.gameId);

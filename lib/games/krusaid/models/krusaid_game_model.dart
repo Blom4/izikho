@@ -249,6 +249,10 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   KrusaidGameModel nextDeckState() {
     PlayCard topDeckCard = deck.removeLast();
 
+    if (deck.isEmpty) {
+      shuffleDeck();
+    }
+
     return copyWith(
       players: [
         for (var player in players)
@@ -264,7 +268,11 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     KrusaidPlayerModel nextPlayer = getNextPlayer();
     final List<PlayCard> takenCards = [];
     for (int i = 0; i < shotPlayer.cardsToTake; i++) {
-      takenCards.add(deck.removeLast());
+      var topCard = deck.removeLast();
+      if (deck.isEmpty) {
+        shuffleDeck();
+      }
+      takenCards.add(topCard);
     }
     return copyWith(
       turnIndex: nextPlayer.index,

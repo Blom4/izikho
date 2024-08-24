@@ -21,7 +21,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'Supabase Flutter',
+      title: 'EZIK\'HO APP',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(
         useMaterial3: true,

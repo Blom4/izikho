@@ -1,30 +1,29 @@
-
 class GameNotificationModel {
   final int? id;
   final String gameId;
-  //final List<> recipients;
+  final bool viewed;
   final String senderName;
   final String message;
 
   GameNotificationModel({
     this.id,
     required this.gameId,
-    //required this.recipients,
     required this.senderName,
     required this.message,
+    this.viewed = false,
   });
 
   GameNotificationModel copyWith({
     int? id,
     String? gameId,
-    //List<String>? recipients,
+    bool? viewed,
     String? senderName,
     String? message,
   }) {
     return GameNotificationModel(
       id: id ?? this.id,
       gameId: gameId ?? this.gameId,
-      ///recipients: recipients ?? this.recipients,
+      viewed: viewed ?? this.viewed,
       senderName: senderName ?? this.senderName,
       message: message ?? this.message,
     );
@@ -34,7 +33,7 @@ class GameNotificationModel {
     return <String, dynamic>{
       'id': id,
       'game_id': gameId,
-      //'recipients': recipients,
+      'viewed': viewed,
       'sender_name': senderName,
       'message': message,
     };
@@ -44,7 +43,7 @@ class GameNotificationModel {
     return GameNotificationModel(
       id: map['id'] != null ? map['id'] as int : null,
       gameId: map['game_id'] as String,
-      //recipients: List<String>.from((map['recipients'] as List<String>)),
+      viewed: map['viewed'] as bool,
       senderName: map['sender_name'] as String,
       message: map['message'] as String,
     );
@@ -61,7 +60,7 @@ class GameNotificationModel {
 
     return other.id == id &&
         other.gameId == gameId &&
-       // other.recipients == recipients &&
+        other.viewed == viewed &&
         other.senderName == senderName &&
         other.message == message;
   }
@@ -70,7 +69,7 @@ class GameNotificationModel {
   int get hashCode {
     return id.hashCode ^
         gameId.hashCode ^
-       // recipients.hashCode ^
+        viewed.hashCode ^
         senderName.hashCode ^
         message.hashCode;
   }

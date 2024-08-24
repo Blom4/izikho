@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../morabaraba/screens/home_screen.dart';
-import '../dialogs/shot_dialog.dart';
 
 class KrusaidHomeScreen extends HookConsumerWidget {
   static const routename = "krusaid-home-screen";

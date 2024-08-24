@@ -6,7 +6,7 @@ part of 'krusaid_game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$krusaidGameHash() => r'e2e33bdc19914098b41c659a2465985d984ff922';
+String _$krusaidGameHash() => r'0be151a4c42badb7c65f5206e8814d19c187dfa6';
 
 /// Copied from Dart SDK
 class _SystemHash {

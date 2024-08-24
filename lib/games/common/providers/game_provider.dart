@@ -10,6 +10,7 @@ import '../../krusaid/models/deck.dart';
 import '../../krusaid/models/krusaid_game_model.dart';
 import '../models/game_model.dart';
 import '../utils/utils.dart';
+import 'game_notifications_provider.dart';
 part 'game_provider.g.dart';
 
 @riverpod
@@ -100,6 +101,7 @@ class Game extends _$Game {
       'id': gameResponse['id'],
       ...gameMap,
     });
+    
   }
 
   SupabaseClient get _supabase => ref.read(supabaseProvider);
