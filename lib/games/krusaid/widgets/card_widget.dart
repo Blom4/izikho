@@ -21,6 +21,7 @@ class CardWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(left: margin),
       width: size,
+      constraints: const BoxConstraints(maxWidth: 250),
       child: PlayingCardView(
         showBack: showBack,
         card: PlayingCard(card.suit, card.value),

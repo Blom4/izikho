@@ -7,17 +7,16 @@ import 'package:izikho/games/krusaid/dialogs/joker_dialog.dart';
 import 'package:izikho/games/krusaid/dialogs/shot_dialog.dart';
 import 'package:playing_cards/playing_cards.dart';
 
-import '../../../common/responsive/responsive.dart';
 import '../../../common/screens/home_screen.dart';
-import '../../common/providers/game_provider.dart';
-import '../models/play_card.dart';
+import '../../common/providers/online_game_provider.dart';
 import '../models/krusaid_game_model.dart';
 import '../models/krusaid_player_model.dart';
+import '../models/play_card.dart';
 import '../providers/krusaid_game_provider.dart';
-import '../widgets/custom_bottom_appbar.dart';
 import '../widgets/krusaid_game_widget.dart';
 
 class KrusaidGameScreen extends StatefulHookConsumerWidget {
+  //const KrusaidGameScreen({super.key});
   const KrusaidGameScreen({super.key, required this.game});
   final KrusaidGameModel game;
   static const String routename = "Krusaid-game-screen";
@@ -30,7 +29,7 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(gameProvider(widget.game.id).future, (_, next) async {
+    ref.listenManual(onlineGameProvider(widget.game.id).future, (_, next) async {
       var game = await next as KrusaidGameModel;
       if (game.currentPlayer.isTurn && game.currentPlayer.isShot) {
         await handleShot(game.currentPlayer);
@@ -48,6 +47,10 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
     }
     if (game.isPlayable(card)) {
       final gameNotifier = ref.read(krusaidGameProvider(widget.game).notifier);
+      if (game.islastPlayCard) {
+        await gameNotifier.play(card, Playable.any);
+        return;
+      }
       switch (card.value) {
         case CardValue.eight:
           final playable = await context.showEightDialog();
@@ -56,9 +59,9 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
           }
           break;
         case CardValue.joker_1 || CardValue.joker_2:
-          final isJocker = await context.showJokerDialog();
-          if (isJocker != null) {
-            if (isJocker) {
+          final isShoot = await context.showJokerDialog();
+          if (isShoot != null) {
+            if (isShoot) {
               await gameNotifier.play(card, Playable.any);
             } else {
               if (mounted) {
@@ -134,29 +137,29 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
     final gameState = ref.watch(krusaidGameProvider(widget.game));
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Krusaid",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.italic,
-              letterSpacing: 2,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            )
-          ],
-        ),
-        bottomNavigationBar:
-            !Responsive.isMobile(context) ? null : const CustomBottomAppBar(),
+        // appBar: AppBar(
+        //   title: const Text(
+        //     "Krusaid",
+        //     style: TextStyle(
+        //       fontSize: 18,
+        //       fontWeight: FontWeight.w700,
+        //       fontStyle: FontStyle.italic,
+        //       letterSpacing: 2,
+        //     ),
+        //   ),
+        //   actions: [
+        //     IconButton(
+        //       icon: const Icon(Icons.share),
+        //       onPressed: () {},
+        //     ),
+        //     IconButton(
+        //       icon: const Icon(Icons.menu),
+        //       onPressed: () {},
+        //     )
+        //   ],
+        // ),
+        // bottomNavigationBar:
+        //     !Responsive.isMobile(context) ? null : const CustomBottomAppBar(),
         body: Stack(
           children: [
             KrusaidGameWidget(
@@ -182,7 +185,7 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
                 child: AlertDialog(
                   title: const Text('Game Over'),
                   content: Text(
-                      "${gameState.data.currentPlayer.id == gameState.data.winner.id ? 'You' : gameState.data.winner.username} won"),
+                      "${gameState.data.isWinner ? 'You' : gameState.data.winner.username} won"),
                   actions: [
                     TextButton(
                       onPressed: () {},

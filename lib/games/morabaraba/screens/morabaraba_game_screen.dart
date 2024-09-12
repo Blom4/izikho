@@ -1,28 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:izikho/common/utils/snackbar.dart';
 
-import '../components/cow.dart';
-import '../components/game.dart';
-import '../widgets/boardview_widget.dart';
-import '../widgets/cow_widget.dart';
+import '../models/marabaraba_player_model.dart';
+import '../models/morabaraba_cell_models.dart';
+import '../models/morabaraba_game_model.dart';
+import '../providers/morabaraba_game_provider.dart';
+import '../widgets/Morabaraba_board_widget.dart';
+import '../widgets/morabaraba_cow_cell_widget.dart';
 
-class MorabarabaScreen extends StatefulWidget {
+class MorabarabaGameScreen extends StatefulHookConsumerWidget {
   static const String routename = 'morabaraba_game_screen';
-  const MorabarabaScreen({super.key});
+  const MorabarabaGameScreen({
+    super.key,
+    required this.gameOptions,
+  });
+  final MorabarabaGameOptions gameOptions;
 
   @override
-  State<MorabarabaScreen> createState() => _GameScreenState();
+  ConsumerState<MorabarabaGameScreen> createState() =>
+      _MorabarabaGameScreenState();
 }
 
-class _GameScreenState extends State<MorabarabaScreen> {
-  late Game game;
-  @override
-  void initState() {
-    game = Game(context);
-    super.initState();
+class _MorabarabaGameScreenState extends ConsumerState<MorabarabaGameScreen> {
+  void updateBoard(MorabarabaCowCell cowCell) {
+    try {
+      // print(cowCell);
+      ref
+          .read(morabarabaGameProvider(widget.gameOptions).notifier)
+          .updatGameState(cowCell);
+    } catch (e) {
+      //throw Exception(e);
+      context.showSnackBar(e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final game = ref.watch(morabarabaGameProvider(widget.gameOptions));
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -32,28 +47,18 @@ class _GameScreenState extends State<MorabarabaScreen> {
             child: Column(
               children: [
                 PlayerInfoWidget(
-                  playerName: "Player 1",
-                  captureCows: game.whiteCaptured,
-                  cowsToPlay: game.whiteCows,
-                  isWhiteTurn: game.isWhiteTurn,
+                  player: game.players.first,
                   isPlayerOne: true,
                 ),
                 Flexible(
                   flex: 5,
-                  child: BoardViewWidget(
+                  child: MorabarabaBoardWidget(
                     board: game.board,
-                    updateBoard: (row, col) {
-                      setState(() {
-                        game.updateBoard(row, col);
-                      });
-                    },
+                    updateBoard: updateBoard,
                   ),
                 ),
                 PlayerInfoWidget(
-                  playerName: "Player 2",
-                  cowsToPlay: game.blackCows,
-                  captureCows: game.blackCaptured,
-                  isWhiteTurn: !game.isWhiteTurn,
+                  player: game.players.last,
                 ),
               ],
             ),
@@ -67,17 +72,11 @@ class _GameScreenState extends State<MorabarabaScreen> {
 class PlayerInfoWidget extends StatelessWidget {
   const PlayerInfoWidget({
     super.key,
-    required this.playerName,
-    required this.captureCows,
-    required this.cowsToPlay,
-    required this.isWhiteTurn,
+    required this.player,
     this.isPlayerOne = false,
   });
-  final String playerName;
+  final MorabarabaPlayerModel player;
   final bool isPlayerOne;
-  final List<Cow> captureCows;
-  final List<Cow> cowsToPlay;
-  final bool isWhiteTurn;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +92,7 @@ class PlayerInfoWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "$playerName ${isWhiteTurn ? "(your turn)" : ""}",
+                player.isTurn ? "(your turn)" : "",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -114,12 +113,20 @@ class PlayerInfoWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CowStackWidget(
-                  cows: cowsToPlay,
+                  cows: [
+                    for (int i = 1; i <= player.cowsInHand; i++)
+                      MorabarabaCowCell(
+                        row: 1,
+                        col: 1,
+                        cellIndex: 0,
+                        cowType: player.cowType,
+                      ),
+                  ],
                   cowSize: 20,
                 ),
                 const SizedBox(width: 5),
                 CowStackWidget(
-                  cows: captureCows,
+                  cows: player.capturedCows,
                   cowSize: 20,
                 ),
               ],
@@ -140,7 +147,7 @@ class CowStackWidget extends StatelessWidget {
     this.backgroundColor = Colors.black12,
   });
 
-  final List<Cow> cows;
+  final List<MorabarabaCowCell> cows;
   final double cowSize;
   final double overlapFactor;
   final Color backgroundColor;
@@ -161,7 +168,7 @@ class CowStackWidget extends StatelessWidget {
           for (int i = 0; i < cows.length; i++)
             Container(
               margin: EdgeInsets.only(left: (i.toDouble() * cowSize) * 0.5),
-              child: CowWidget(
+              child: MorabarabaCow(
                 cow: cows[i],
                 size: cowSize,
               ),

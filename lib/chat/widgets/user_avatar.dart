@@ -35,7 +35,7 @@ class MyUserAvatar extends ConsumerWidget {
                   )
                 : null,
           ),
-          if (status == UserOnlineStatus.offline)
+          if (status == UserOnlineStatus.online)
             Positioned(
               bottom: -1.5,
               right: -1.5,

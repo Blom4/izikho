@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
 enum Playable {
-  any(color: Colors.white, suit: Suit.joker, symbol: 'ANY'),
+  any(color: Colors.black, suit: Suit.joker, symbol: ' * '),
   spades(color: Colors.black, suit: Suit.spades, symbol: '♠'),
   hearts(color: Colors.red, suit: Suit.hearts, symbol: '♥'),
   diamonds(color: Colors.red, suit: Suit.diamonds, symbol: '♦'),

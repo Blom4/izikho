@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:izikho/games/common/providers/game_provider.dart';
+import 'package:izikho/games/common/providers/online_game_provider.dart';
 
 class WaitingScreen extends StatefulHookConsumerWidget {
   const WaitingScreen({
@@ -18,12 +18,12 @@ class WaitingScreen extends StatefulHookConsumerWidget {
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    ref.listen(gameProvider(widget.channel), (_, next) {
+    ref.listen(onlineGameProvider(widget.channel), (_, next) {
       if (next.hasValue && next.value!.allJoined) {
         context.goNamed(next.value!.gameType.route, extra: next.value!);
       }
     });
-    final asyncGame = ref.watch(gameProvider(widget.channel));
+    final asyncGame = ref.watch(onlineGameProvider(widget.channel));
     return Scaffold(
       appBar: AppBar(title: const Text("Waiting Screen")),
       body: Padding(

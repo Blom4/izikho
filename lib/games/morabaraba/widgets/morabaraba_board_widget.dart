@@ -1,8 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:izikho/games/morabaraba/widgets/morabaraba_cow_cell_widget.dart';
 
-import '../constants/game_constants.dart';
+import '../constants/morabaraba_constants.dart';
+import '../models/morabaraba_board_model.dart';
+import '../models/morabaraba_cell_models.dart';
+import '../utils/morabaraba_utils.dart';
 
-class BoardPainter extends CustomPainter {
+class MorabarabaBoardWidget extends StatelessWidget {
+  const MorabarabaBoardWidget({
+    super.key,
+    required this.board,
+    required this.updateBoard,
+  });
+
+  final MorabarabaBoardModel board;
+  final void Function(MorabarabaCowCell) updateBoard;
+
+  @override
+  Widget build(BuildContext context) {
+    var ratio = responsiveScreenRatio(context);
+    return AspectRatio(
+      aspectRatio: ratio,
+      child: Stack(
+        //alignment: Alignment.center,
+        children: [
+          MorabarabaBoard(
+            aspectRatio: ratio,
+          ),
+          MorabarabaGrid(
+            board: board,
+            updateBoard: updateBoard,
+            aspectRatio: ratio,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class MorabarabaGrid extends StatelessWidget {
+  const MorabarabaGrid({
+    super.key,
+    required this.board,
+    required this.updateBoard,
+    required this.aspectRatio,
+  });
+  final MorabarabaBoardModel board;
+  final double aspectRatio;
+  final void Function(MorabarabaCowCell) updateBoard;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 15,
+      childAspectRatio: aspectRatio,
+      children: List<Widget>.generate(
+        board.boardCells.length,
+        (int index) {
+          if (board.boardCells[index].type != MorabarabaCellType.none) {
+            if (board.boardCells[index] is MorabarabaCowCell) {
+              return MorabarabaCowCellWidget(
+                cell: board.boardCells[index] as MorabarabaCowCell,
+                onTap: () => updateBoard(
+                  board.boardCells[index] as MorabarabaCowCell,
+                ),
+              );
+            }
+            // return Center(
+            //   child: Text("$index"),
+            // );
+          }
+          return Container(
+            color: Colors.transparent,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MorabarabaBoard extends StatelessWidget {
+  const MorabarabaBoard({
+    super.key,
+    required this.aspectRatio,
+  });
+  final double aspectRatio;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: aspectRatio,
+      child: CustomPaint(
+        painter: MorabarabaBoardPainter(),
+      ),
+    );
+  }
+}
+
+class MorabarabaBoardPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var gridWidth = size.width / 30;
@@ -119,8 +215,8 @@ class BoardPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(BoardPainter oldDelegate) => false;
+  bool shouldRepaint(MorabarabaBoardPainter oldDelegate) => false;
 
   @override
-  bool shouldRebuildSemantics(BoardPainter oldDelegate) => false;
+  bool shouldRebuildSemantics(MorabarabaBoardPainter oldDelegate) => false;
 }

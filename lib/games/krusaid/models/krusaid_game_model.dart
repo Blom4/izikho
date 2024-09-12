@@ -1,9 +1,23 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:playing_cards/playing_cards.dart';
 
 import '../../common/models/game_model.dart';
 import '../../common/models/player_model.dart';
-import 'play_card.dart';
 import 'krusaid_player_model.dart';
+import 'play_card.dart';
+
+class KrusaidGameOptions extends GameOptions {
+  final double servedCards;
+
+  KrusaidGameOptions({
+  
+    required super.gameType,
+    required super.gameMode,
+    required super.players,
+    required super.gamePlayerType,
+    required this.servedCards,
+  });
+}
 
 class KrusaidGameState {
   final KrusaidGameModel data;
@@ -46,16 +60,18 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   final bool served;
   bool direction;
   Playable playable;
+  final double servedCards;
 
   KrusaidGameModel({
     super.id,
-    super.turn,
     super.gameOver,
     super.profileId,
     super.started,
     required super.gameType,
+    required super.gameMode,
     required super.players,
     required this.deck,
+    required this.servedCards,
     this.playedCards = const [],
     this.turnIndex = 0,
     this.playable = Playable.any,
@@ -68,6 +84,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     return KrusaidGameModel(
       id: map['id'] as String,
       gameType: GameType.values.firstWhere((e) => e.name == map['game_type']),
+      gameMode: GameMode.values.firstWhere((e) => e.name == map['game_mode']),
       players: List<KrusaidPlayerModel>.from(
         (map['players'] as List<dynamic>).map<PlayerModel>(
           (x) => PlayerModel.fromMap(x as Map<String, dynamic>),
@@ -75,9 +92,6 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
       ),
       started: map['started'] as bool,
       gameOver: map['game_over'] as bool,
-      turn: map['turn'] != null
-          ? PlayerModel.fromMap(map['turn'] as Map<String, dynamic>)
-          : null,
       playedCards: List<PlayCard>.from(
         (extra['played_cards'] as List<dynamic>).map<PlayCard>(
           (x) => PlayCard.fromMap(x as Map<String, dynamic>),
@@ -91,6 +105,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
       playable: Playable.values.firstWhere((e) => e.name == extra['playable']),
       turnIndex: extra['turn_index'] as int,
       direction: extra['direction'] as bool,
+      servedCards: extra['served_cards'] as double,
       served: extra['served'] as bool,
     );
   }
@@ -99,13 +114,14 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'game_type': gameType.name,
+      'game_mode': gameMode.name,
       'players': players.map((x) => x.toMap()).toList(),
       'started': started,
       'game_over': gameOver,
-      'turn': turn?.toMap(),
       'extra_props': {
         'played_cards': playedCards.map((x) => x.toMap()).toList(),
         'deck': deck.map((x) => x.toMap()).toList(),
+        'served_cards': servedCards,
         'playable': playable.name,
         'turn_index': turnIndex,
         'direction': direction,
@@ -119,14 +135,15 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     String? id,
     String? profileId,
     GameType? gameType,
+    GameMode? gameMode,
     List<KrusaidPlayerModel>? players,
     bool? started,
     bool? gameOver,
-    PlayerModel? turn,
     List<PlayCard>? playedCards,
     List<PlayCard>? deck,
     Playable? playable,
     int? turnIndex,
+    double? servedCards,
     bool? direction,
     bool? served,
   }) {
@@ -134,14 +151,16 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
       id: id ?? this.id,
       profileId: profileId ?? this.profileId,
       gameType: gameType ?? this.gameType,
+      gameMode: gameMode ?? this.gameMode,
       players: players ?? this.players,
       started: started ?? this.started,
       gameOver: gameOver ?? this.gameOver,
-      turn: turn ?? this.turn,
+    
       playedCards: playedCards ?? this.playedCards,
       deck: deck ?? this.deck,
       playable: playable ?? this.playable,
       turnIndex: turnIndex ?? this.turnIndex,
+      servedCards: servedCards ?? this.servedCards,
       direction: direction ?? this.direction,
       served: served ?? this.served,
     );
@@ -189,13 +208,13 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     deck.shuffle();
   }
 
-  KrusaidGameModel serveCards(int numOfcards) {
+  KrusaidGameModel serveCards() {
     if (!served) {
       List<KrusaidPlayerModel> players = [];
       shuffleDeck();
       for (KrusaidPlayerModel player in this.players) {
         List<PlayCard> playerCards = [];
-        for (int i = 0; i < numOfcards; i++) {
+        for (int i = 0; i < servedCards; i++) {
           if (deck.isNotEmpty) {
             playerCards.add(deck.removeLast());
           }
@@ -217,11 +236,12 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     }
 
     KrusaidPlayerModel me = _getCurrentPlayer(card);
-    KrusaidPlayerModel nextPlayer = getNextPlayer(card);
 
     if (me.cards.isEmpty) {
       gameOver = true;
     }
+
+    KrusaidPlayerModel nextPlayer = getNextPlayer(card);
 
     return copyWith(
       playedCards: [...playedCards, card],
@@ -294,7 +314,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   }
 
   KrusaidPlayerModel getNextPlayer([PlayCard? card]) {
-    if (card == null) {
+    if (gameOver || card == null) {
       return players[_nextIndex].copyWith(
         isShot: false,
         isTurn: true,
@@ -369,6 +389,10 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   KrusaidPlayerModel get turnPlayer => players[turnIndex];
 
   int get _currentIndex => turnIndex;
+
+  bool get isMyTurn => currentPlayer.index == turnIndex;
+  bool get isWinner => currentPlayer.index == winner.index;
+  bool get islastPlayCard => currentPlayer.cards.length == 1;
 
   int get _nextIndex {
     if (direction) {

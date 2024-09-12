@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/providers/supabase_provider.dart';
-import '../../common/providers/game_provider.dart';
+import '../../common/providers/online_game_provider.dart';
 import '../models/play_card.dart';
 import '../models/krusaid_game_model.dart';
 import '../models/krusaid_player_model.dart';
@@ -13,7 +13,7 @@ part 'krusaid_game_provider.g.dart';
 class KrusaidGame extends _$KrusaidGame {
   @override
   KrusaidGameState build(KrusaidGameModel game) {
-    final asyncGame = ref.watch(gameProvider(game.id));
+    final asyncGame = ref.watch(onlineGameProvider(game.id));
     return asyncGame.when(
       data: (data) => KrusaidGameState(data: data as KrusaidGameModel),
       error: (error, stackTrace) =>
@@ -28,7 +28,7 @@ class KrusaidGame extends _$KrusaidGame {
         state = KrusaidGameState.loading(data: game);
         final res = await _supabase.from('games').upsert({
           'id': game.id,
-          ...state.data.serveCards(numOfCards).copyWith(started: true).toMap(),
+          ...state.data.serveCards().copyWith(started: true).toMap(),
         }).select();
         state = KrusaidGameState(data: KrusaidGameModel.fromMap(res.first));
       }

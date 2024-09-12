@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_supabase_chat_core/flutter_supabase_chat_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -24,8 +23,7 @@ final appRouteProvider = Provider<GoRouter>((ref) {
     refreshListenable: _AppRouter(ref),
     routes: [
       ShellRoute(
-        builder: (context, state, child) =>
-            UserOnlineStateObserver(child: child),
+        builder: (context, state, child) => child,
         routes: _AppRouter(ref).routes,
         redirect: _AppRouter(ref).redirect,
       ),
@@ -48,9 +46,7 @@ class _AppRouter extends ChangeNotifier {
           builder: (context, state) => const SplashScreen(),
         ),
         ShellRoute(
-          builder: (context, state, child) => MainScreen(
-            child: child,
-          ),
+          builder: (context, state, child) => MainScreen(child: child),
           routes: [
             GoRoute(
               path: '/home',
@@ -61,7 +57,7 @@ class _AppRouter extends ChangeNotifier {
               path: '/chat/rooms',
               name: ChatRoomsScreen.routename,
               builder: (context, state) => const ChatRoomsScreen(),
-             ),
+            ),
             GoRoute(
               path: '/games',
               name: GameScreen.routename,

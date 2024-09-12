@@ -5,7 +5,7 @@ import '../../common/models/player_model.dart';
 import 'play_card.dart';
 
 class KrusaidPlayerModel extends PlayerModel {
-  static const playerType = PlayerType.krusaid;
+  static const playerType = GamePlayerType.krusaid;
   final List<PlayCard> cards;
   final int index;
   final bool isShot;
@@ -68,9 +68,10 @@ class KrusaidPlayerModel extends PlayerModel {
     return KrusaidPlayerModel(
       id: profile.id,
       username: profile.username,
-      index: 0,
+      index: -1,
     );
   }
+
   factory KrusaidPlayerModel.fromMap(Map<String, dynamic> map) {
     return KrusaidPlayerModel(
       id: map['id'] as String,
@@ -88,8 +89,6 @@ class KrusaidPlayerModel extends PlayerModel {
       cardsToTake: map['cardsToTake'] as int,
     );
   }
-   
-   
 
   @override
   String toString() {

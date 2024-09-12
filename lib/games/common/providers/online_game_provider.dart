@@ -1,20 +1,19 @@
-import 'package:izikho/auth/model/profile_model.dart';
-import 'package:izikho/auth/providers/profile_provider.dart';
-import 'package:izikho/common/providers/supabase_provider.dart';
-import 'package:izikho/games/common/models/player_model.dart';
-import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../auth/model/profile_model.dart';
+import '../../../auth/providers/profile_provider.dart';
+import '../../../common/providers/supabase_provider.dart';
 import '../../krusaid/models/deck.dart';
 import '../../krusaid/models/krusaid_game_model.dart';
+import '../../krusaid/models/krusaid_player_model.dart';
 import '../models/game_model.dart';
+import '../models/player_model.dart';
 import '../utils/utils.dart';
-import 'game_notifications_provider.dart';
-part 'game_provider.g.dart';
+part 'online_game_provider.g.dart';
 
 @riverpod
-class Game extends _$Game {
+class OnlineGame extends _$OnlineGame {
   @override
   Stream<GameModel> build([String? channel]) async* {
     if (channel == null) {
@@ -32,16 +31,17 @@ class Game extends _$Game {
     }
   }
 
-  Future<String> createGame(
-    GameType gameType,
-    List<PlayerModel> players,
-    String message,
-  ) async {
-    final currentPlayer = PlayerModel.fromProfile(await _getProfile());
+  Future<String> createGame(GameOptions gameOptions) async {
+    final currentPlayer = PlayerModel.fromProfile(
+      await _getProfile(),
+      playerType: gameOptions.gamePlayerType,
+    );
 
-    final newGameMap = switch (gameType) {
+    final newGameMap = switch (gameOptions.gameType) {
       GameType.krusaid => () {
-          final krusaidPlayers = [currentPlayer, ...players].indexed.map(
+          final krusaidGameOptions = gameOptions as KrusaidGameOptions;
+          final krusaidPlayers =
+              [currentPlayer, ...gameOptions.players].indexed.map(
             (element) {
               var (i, e) = element;
               if (i == 0) {
@@ -63,9 +63,11 @@ class Game extends _$Game {
           ).toList();
 
           return KrusaidGameModel(
-            gameType: gameType,
+            gameType: gameOptions.gameType,
+            gameMode: gameOptions.gameMode,
             players: krusaidPlayers,
             deck: myStandardFiftyFourCardDeck(),
+            servedCards: krusaidGameOptions.servedCards,
           ).toMap();
         }(),
       _ => throw UnimplementedError(),
@@ -101,7 +103,6 @@ class Game extends _$Game {
       'id': gameResponse['id'],
       ...gameMap,
     });
-    
   }
 
   SupabaseClient get _supabase => ref.read(supabaseProvider);

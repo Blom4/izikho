@@ -55,3 +55,54 @@ class GameSearchWidget extends HookConsumerWidget {
     );
   }
 }
+class ModeSearchWidget extends HookConsumerWidget {
+  const ModeSearchWidget({
+    super.key,
+    required this.hintText,
+    required this.onModeSelected,
+  });
+  
+  final String hintText;
+  final void Function(GameMode) onModeSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchResults = useState(GameMode.values);
+    return Container(
+      //color: Theme.of(context).colorScheme.primaryContainer,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          TextField(
+            onChanged: (value) {
+              searchResults.value = GameMode.values
+                  .where(
+                    (element) =>
+                        element.name.toLowerCase().contains(value.toLowerCase()),
+                  )
+                  .toList();
+            },
+            decoration: InputDecoration(
+              hintText: hintText,
+              isDense: true,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.search),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              itemCount: searchResults.value.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(searchResults.value[index].name),
+                  onTap: () => onModeSelected(searchResults.value[index]),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:izikho/games/krusaid/widgets/playground_widget.dart';
 
-import '../../../common/responsive/responsive.dart';
+import '../models/krusaid_player_model.dart';
 import '../models/play_card.dart';
 import '../models/krusaid_game_model.dart';
-import 'custom_bottom_appbar.dart';
 import 'player_cards_widget.dart';
-import 'players_widget.dart';
-import 'playground_widget.dart';
+import 'other_players_info_widget.dart';
 
 class KrusaidGameWidget extends HookConsumerWidget {
   final KrusaidGameModel game;
@@ -24,49 +23,68 @@ class KrusaidGameWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 500),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              PlayersWidget(players: game.players),
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: PlayGroundWidget(
-                        deckWidget: DeckWidget(deck: game.deck),
-                        infoWidget: InfoWidget(
-                          numOfDeckCards: game.deckCount,
-                          turnPlayerName: game.currentPlayer.isTurn
-                              ? "You"
-                              : game.turnPlayer.username,
-                          playable: game.playable,
-                        ),
-                        playedCardsWidget: PlayedCardsWidget(
-                          playedCards: game.playedCards,
-                          onPlayCard: onPlayCard,
-                        ),
+      child: Column(
+        children: [
+          OtherPlayersInfoWidget(
+            otherPlayers: game.otherPlayers,
+          ),
+          playerTurn(game.turnPlayer),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      DeckWidget(deck: game.deck),
+                      playableCard(game.playable),
+                      PlayedCardsWidget(
+                        playedCards: game.playedCards,
+                        onPlayCard: onPlayCard,
                       ),
-                    ),
-                    Expanded(
-                      flex: Responsive.isMobile(context) ? 3 : 4,
-                      child: PlayerCardsWidget(
-                        player: game.currentPlayer,
-                        onDeckCard: onDeckCard,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              if (!Responsive.isMobile(context)) const CustomBottomAppBar()
-            ],
+                const SizedBox(height: 10),
+                PlayerCardsWidget(
+                  player: game.currentPlayer,
+                  onDeckCard: onDeckCard,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  FittedBox playableCard(Playable playable) {
+    return FittedBox(
+      child: SizedBox(
+        width: 20,
+        child: CircleAvatar(
+          backgroundColor: Colors.white,
+          child: Text(
+            playable.symbol,
+            style: TextStyle(color: playable.color),
           ),
         ),
+      ),
+    );
+  }
+
+  Text playerTurn(KrusaidPlayerModel turn) {
+    return Text.rich(
+      TextSpan(
+        text: "${game.isMyTurn ? 'Your ' : '${turn.username}\' '} ",
+        children: const [
+          TextSpan(
+            text: 'turn',
+            style: TextStyle(color: Colors.deepPurple),
+          )
+        ],
       ),
     );
   }

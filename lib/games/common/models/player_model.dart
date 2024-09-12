@@ -1,7 +1,9 @@
 import '../../../auth/model/profile_model.dart';
 import '../../krusaid/models/krusaid_player_model.dart';
+import '../../morabaraba/models/marabaraba_player_model.dart';
 
-enum PlayerType {
+enum GamePlayerType {
+  none,
   ak47,
   casino,
   chess,
@@ -11,7 +13,7 @@ enum PlayerType {
   morabaraba;
 }
 
-class PlayerModel {
+abstract class PlayerModel {
   final String id;
   final String username;
   final bool joined;
@@ -25,9 +27,8 @@ class PlayerModel {
     this.isTurn = false,
     this.isOwner = false,
   });
-
   factory PlayerModel.fromMap(Map<String, dynamic> map) {
-    final playertype = PlayerType.values.firstWhere(
+    final playertype = GamePlayerType.values.firstWhere(
       (e) => map['playerType'] == e.name,
     );
     switch (playertype) {
@@ -38,23 +39,32 @@ class PlayerModel {
     }
   }
 
-  factory PlayerModel.fromProfile(ProfileModel profile) {
-    return PlayerModel(id: profile.id, username: profile.username);
+  factory PlayerModel.fromProfile(
+    ProfileModel profile, {
+    GamePlayerType playerType = GamePlayerType.none,
+  }) {
+    switch (playerType) {
+      case GamePlayerType.krusaid:
+        return KrusaidPlayerModel.fromProfile(profile);
+      case GamePlayerType.morabaraba:
+        return MorabarabaPlayerModel.fromProfile(profile);
+      default:
+        throw UnimplementedError();
+    }
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'username': username,
-      'joined': joined,
-      'isTurn': isTurn,
-      'isOwner': isOwner,
-    };
-  }
+  Map<String, dynamic> toMap();
 
   @override
   String toString() {
-    return 'PlayerModel(id: $id, username: $username, joined: $joined, isTurn: $isTurn)';
+    return '''
+    PlayerModel(
+     id: $id, 
+     username: $username, 
+     joined: $joined, 
+     isTurn: $isTurn
+    )
+    ''';
   }
 
   PlayerModel copyWith({
@@ -63,15 +73,7 @@ class PlayerModel {
     bool? joined,
     bool? isTurn,
     bool? isOwner,
-  }) {
-    return PlayerModel(
-      id: id ?? this.id,
-      username: username ?? this.username,
-      joined: joined ?? this.joined,
-      isTurn: isTurn ?? this.isTurn,
-      isOwner: isOwner ?? this.isOwner,
-    );
-  }
+  });
 
   @override
   bool operator ==(covariant PlayerModel other) {
