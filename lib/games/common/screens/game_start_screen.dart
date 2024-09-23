@@ -8,10 +8,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../krusaid/widgets/krusaid_game_options_widget.dart';
 import '../../morabaraba/widgets/morabaraba_game_options_widget.dart';
 import '../models/game_model.dart';
-import '../providers/online_game_provider.dart';
+import '../providers/game_online_provider.dart';
 import '../widgets/game_options_widgets.dart';
 import '../widgets/game_search_widget.dart';
-import 'waiting_screen.dart';
+import 'game_waiting_screen.dart';
 
 class GameStartScreen extends StatefulHookConsumerWidget {
   const GameStartScreen({super.key});
@@ -30,10 +30,10 @@ class _GameStartScreenState extends ConsumerState<GameStartScreen> {
     try {
       if (gameOptions.gameMode == GameMode.online) {
         final gameId = await ref
-            .read(onlineGameProvider().notifier)
+            .read(gameOnlineProvider().notifier)
             .createGame(gameOptions);
         if (mounted) {
-          context.goNamed(WaitingScreen.routename, extra: gameId);
+          context.goNamed(GameWaitingScreen.routename, extra: gameId);
         }
       }
     } on PostgrestException catch (e) {

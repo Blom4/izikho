@@ -4,23 +4,23 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../auth/model/profile_model.dart';
 import '../../../auth/providers/profile_provider.dart';
 import '../../../common/providers/supabase_provider.dart';
-import '../../krusaid/models/deck.dart';
+import '../models/game_deck.dart';
 import '../../krusaid/models/krusaid_game_model.dart';
 import '../../krusaid/models/krusaid_player_model.dart';
 import '../models/game_model.dart';
 import '../models/player_model.dart';
-import '../utils/utils.dart';
-part 'online_game_provider.g.dart';
+import '../utils/game_utils.dart';
+part 'game_online_provider.g.dart';
 
 @riverpod
-class OnlineGame extends _$OnlineGame {
+class GameOnline extends _$GameOnline {
   @override
   Stream<GameModel> build([String? channel]) async* {
     if (channel == null) {
       throw Exception('Please provide a channel');
     }
     await for (final games in _gameStream.eq('id', channel)) {
-      switch (getGameType(games.first)) {
+      switch (GameUtils.getGameType(games.first)) {
         case GameType.krusaid:
           final profile = await _getProfile();
           yield KrusaidGameModel.fromMap(games.first)
@@ -66,7 +66,7 @@ class OnlineGame extends _$OnlineGame {
             gameType: gameOptions.gameType,
             gameMode: gameOptions.gameMode,
             players: krusaidPlayers,
-            deck: myStandardFiftyFourCardDeck(),
+            deck: GameDeck.myStandardFiftyFourCardDeck(),
             servedCards: krusaidGameOptions.servedCards,
           ).toMap();
         }(),
@@ -82,7 +82,7 @@ class OnlineGame extends _$OnlineGame {
       gameResponse as Map<String, dynamic>,
     ] = await Future.wait([_getProfile(), _getGameResponse(channel)]);
 
-    final gameMap = switch (getGameType(gameResponse)) {
+    final gameMap = switch (GameUtils.getGameType(gameResponse)) {
       GameType.krusaid => () {
           final krusaidGame = KrusaidGameModel.fromMap(gameResponse);
 

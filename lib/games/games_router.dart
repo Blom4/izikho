@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:izikho/games/common/screens/waiting_screen.dart';
+import 'package:izikho/games/common/screens/game_waiting_screen.dart';
 
 import 'common/screens/notifications_screen.dart';
 import 'common/screens/game_start_screen.dart';
@@ -15,8 +15,8 @@ class GameRouter {
     ),
     GoRoute(
       path: '/game/waiting',
-      name: WaitingScreen.routename,
-      builder: (context, state) => WaitingScreen(
+      name: GameWaitingScreen.routename,
+      builder: (context, state) => GameWaitingScreen(
         channel: state.extra as String,
       ),
     ),

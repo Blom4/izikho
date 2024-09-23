@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import '../utils/morabaraba_utils.dart';
+
 enum MorabarabaCellType {
   path,
   cow,
@@ -12,14 +14,14 @@ enum MorabarabaCowType {
 }
 
 enum MorabarabaCowMove {
-  top(-1, 0),
-  right(0, 1),
-  bottom(1, 0),
-  left(0, -1),
+  top(0, -1),
+  right(1, 0),
+  bottom(0, 1),
+  left(-1, 0),
   topLeft(-1, -1),
   bottomRight(1, 1),
-  topRight(-1, 1),
-  bottomLeft(1, -1);
+  topRight(1, -1),
+  bottomLeft(-1, 1);
 
   final int x;
   final int y;
@@ -28,10 +30,10 @@ enum MorabarabaCowMove {
 }
 
 enum MorabarabaCowCaptureMove {
-  top(-1, 0),
-  right(0, 1),
-  bottom(1, 0),
-  left(0, -1);
+  top(0, -1),
+  right(1, 0),
+  bottom(0, 1),
+  left(-1, 0);
 
   final int x;
   final int y;
@@ -51,7 +53,7 @@ class MorabarabaCell {
     required this.cellIndex,
   });
 
-  ({int row, int col}) get position => (row: row, col: col);
+  String get position => '$row,$col';
 
   MorabarabaCell copyWith({
     MorabarabaCellType? type,
@@ -112,37 +114,22 @@ class MorabarabaCowCell extends MorabarabaCell {
     required super.cellIndex,
     required this.cowType,
     this.isSelected = false,
-    this.isCaptureCell =false,
-    this.isLastCowPlayed =false,
+    this.isCaptureCell = false,
+    this.isLastCowPlayed = false,
   });
   final MorabarabaCowType cowType;
   final bool isSelected;
   final bool isCaptureCell;
   final bool isLastCowPlayed;
 
-  final List<({int row, int col})> _midCellPosition = [
-    (row: 7, col: 7),
-    (row: 2, col: 7),
-    (row: 7, col: 2),
-    (row: 12, col: 7),
-    (row: 7, col: 12),
-  ];
-
-  final _vSpecialCellPosition = [
-    (row:4, col:7),
-    (row:10, col:7),
-  ];
-  final _hSpecialCellPosition = [
-    (row:7,col: 4),
-    (row:7,col: 10),
-  ];
-
-
   bool get hasNoCow => cowType == MorabarabaCowType.none;
 
-  bool get isMidCellPosition => _midCellPosition.any((e) => e == position);
-  bool get isVSpecialCellPosition => _vSpecialCellPosition.any((e) => e == position);
-  bool get isHSpecialCellPosition => _hSpecialCellPosition.any((e) => e == position);
+  bool get isMidCellPosition =>
+      MorabarabaUtils.midCellPosition.any((e) => e == position);
+  bool get isVSpecialCellPosition =>
+      MorabarabaUtils.vSpecialCellPosition.any((e) => e == position);
+  bool get isHSpecialCellPosition =>
+      MorabarabaUtils.hSpecialCellPosition.any((e) => e == position);
 
   @override
   MorabarabaCowCell copyWith({
@@ -156,15 +143,14 @@ class MorabarabaCowCell extends MorabarabaCell {
     bool? isCaptureCell,
   }) {
     return MorabarabaCowCell(
-      type: type ?? this.type,
-      row: row ?? this.row,
-      col: col ?? this.col,
-      cellIndex: cellIndex ?? this.cellIndex,
-      cowType: cowType ?? this.cowType,
-      isSelected: isSelected ?? this.isSelected,
-      isLastCowPlayed: isLastCowPlayed ?? this.isLastCowPlayed,
-      isCaptureCell: isCaptureCell??this.isCaptureCell
-    );
+        type: type ?? this.type,
+        row: row ?? this.row,
+        col: col ?? this.col,
+        cellIndex: cellIndex ?? this.cellIndex,
+        cowType: cowType ?? this.cowType,
+        isSelected: isSelected ?? this.isSelected,
+        isLastCowPlayed: isLastCowPlayed ?? this.isLastCowPlayed,
+        isCaptureCell: isCaptureCell ?? this.isCaptureCell);
   }
 
   @override
@@ -187,7 +173,7 @@ class MorabarabaCowCell extends MorabarabaCell {
       col.hashCode ^
       cowType.hashCode ^
       isSelected.hashCode ^
-      isCaptureCell.hashCode^
+      isCaptureCell.hashCode ^
       isLastCowPlayed.hashCode;
 
   @override

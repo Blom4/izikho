@@ -19,23 +19,23 @@ enum Playable {
   });
 }
 
-class PlayCard {
+class GamePlayingCard {
   // The suit of the card.
   final Suit suit;
   // The rank of the card. ace->king.
   final CardValue value;
 
   // Creates a playing card.
-  PlayCard(
+  GamePlayingCard(
     this.suit,
     this.value,
   );
 
-  PlayCard copyWith({
+  GamePlayingCard copyWith({
     Suit? suit,
     CardValue? value,
   }) {
-    return PlayCard(
+    return GamePlayingCard(
       suit ?? this.suit,
       value ?? this.value,
     );
@@ -48,18 +48,18 @@ class PlayCard {
     };
   }
 
-  factory PlayCard.fromMap(Map<String, dynamic> map) {
-    return PlayCard(
+  factory GamePlayingCard.fromMap(Map<String, dynamic> map) {
+    return GamePlayingCard(
       Suit.values.firstWhere((element) => element.name == map['suit']),
       CardValue.values.firstWhere((element) => element.name == map['value']),
     );
   }
 
   @override
-  String toString() => 'PlayCard(suit: $suit, value: $value)';
+  String toString() => 'GamePlayingCard(suit: $suit, value: $value)';
 
   @override
-  bool operator ==(covariant PlayCard other) {
+  bool operator ==(covariant GamePlayingCard other) {
     if (identical(this, other)) return true;
 
     return other.suit == suit && other.value == value;

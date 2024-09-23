@@ -4,9 +4,9 @@ import 'package:izikho/games/common/models/game_model.dart';
 import '../../../common/responsive/responsive.dart';
 import '../widgets/game_tile_widget.dart';
 
-class GameScreen extends StatelessWidget {
-  static const String routename = 'game_screen';
-  const GameScreen({super.key});
+class GameHomeScreen extends StatelessWidget {
+  static const String routename = 'game_home_screen';
+  const GameHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

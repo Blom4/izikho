@@ -13,7 +13,7 @@ import 'chat/screens/chat_rooms_screen.dart';
 import 'common/screens/home_screen.dart';
 import 'common/screens/main_screen.dart';
 import 'common/screens/splash_screen.dart';
-import 'games/common/screens/game_screen.dart';
+import 'games/common/screens/game_home_screen.dart';
 import 'games/games_router.dart';
 
 final appRouteProvider = Provider<GoRouter>((ref) {
@@ -60,8 +60,8 @@ class _AppRouter extends ChangeNotifier {
             ),
             GoRoute(
               path: '/games',
-              name: GameScreen.routename,
-              builder: (context, state) => const GameScreen(),
+              name: GameHomeScreen.routename,
+              builder: (context, state) => const GameHomeScreen(),
             ),
             GoRoute(
               path: '/profile',

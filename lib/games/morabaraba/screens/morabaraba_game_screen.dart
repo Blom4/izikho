@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/common/utils/snackbar.dart';
 
+import '../../common/widgets/game_screen_header_widget.dart';
 import '../models/marabaraba_player_model.dart';
 import '../models/morabaraba_cell_models.dart';
 import '../models/morabaraba_game_model.dart';
 import '../providers/morabaraba_game_provider.dart';
-import '../widgets/Morabaraba_board_widget.dart';
+import '../widgets/morabaraba_board_widget.dart';
 import '../widgets/morabaraba_cow_cell_widget.dart';
 
 class MorabarabaGameScreen extends StatefulHookConsumerWidget {
@@ -25,12 +26,10 @@ class MorabarabaGameScreen extends StatefulHookConsumerWidget {
 class _MorabarabaGameScreenState extends ConsumerState<MorabarabaGameScreen> {
   void updateBoard(MorabarabaCowCell cowCell) {
     try {
-      // print(cowCell);
       ref
           .read(morabarabaGameProvider(widget.gameOptions).notifier)
-          .updatGameState(cowCell);
+          .updateGame(cowCell);
     } catch (e) {
-      //throw Exception(e);
       context.showSnackBar(e.toString());
     }
   }
@@ -46,19 +45,27 @@ class _MorabarabaGameScreenState extends ConsumerState<MorabarabaGameScreen> {
             padding: const EdgeInsets.all(10.0),
             child: Column(
               children: [
-                PlayerInfoWidget(
-                  player: game.players.first,
-                  isPlayerOne: true,
-                ),
-                Flexible(
-                  flex: 5,
-                  child: MorabarabaBoardWidget(
-                    board: game.board,
-                    updateBoard: updateBoard,
-                  ),
-                ),
-                PlayerInfoWidget(
-                  player: game.players.last,
+                GameScreenHeaderWidget(title: game.gameType.name),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(height: 20),
+                    MorabarabaPlayerInfoWidget(
+                      player: game.players.first,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                        '${game.turnPlayer.username}(${game.turnPlayer.cowType.name})\'s turn'),
+                    const SizedBox(height: 10),
+                    MorabarabaBoardWidget(
+                      board: game.board,
+                      updateBoard: updateBoard,
+                    ),
+                    const SizedBox(height: 20),
+                    MorabarabaPlayerInfoWidget(
+                      player: game.players.last,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -69,68 +76,113 @@ class _MorabarabaGameScreenState extends ConsumerState<MorabarabaGameScreen> {
   }
 }
 
-class PlayerInfoWidget extends StatelessWidget {
-  const PlayerInfoWidget({
+class MorabarabaPlayerInfoWidget extends StatelessWidget {
+  const MorabarabaPlayerInfoWidget({
     super.key,
     required this.player,
-    this.isPlayerOne = false,
   });
+
   final MorabarabaPlayerModel player;
-  final bool isPlayerOne;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: const BoxDecoration(
-        color: Colors.black12,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color:
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10),
+        ),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                player.isTurn ? "(your turn)" : "",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              Row(
-                children: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.undo)),
-                  if (isPlayerOne)
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
-                ],
-              ),
-            ],
+          const CircleAvatar(
+            radius: 22,
+            child: Icon(
+              Icons.person,
+              size: 30,
+            ),
           ),
-          const SizedBox(height: 5),
-          FittedBox(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CowStackWidget(
-                  cows: [
-                    for (int i = 1; i <= player.cowsInHand; i++)
-                      MorabarabaCowCell(
-                        row: 1,
-                        col: 1,
-                        cellIndex: 0,
-                        cowType: player.cowType,
-                      ),
-                  ],
-                  cowSize: 20,
+                Text(
+                  '${player.username}  ( ${player.cowType.name} )',
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                const SizedBox(width: 5),
-                CowStackWidget(
-                  cows: player.capturedCows,
-                  cowSize: 20,
+                const SizedBox(height: 5),
+                FittedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CowStackWidget(
+                            cows: [
+                              for (int i = 1; i <= player.cowsInHand; i++)
+                                MorabarabaCowCell(
+                                  row: 1,
+                                  col: 1,
+                                  cellIndex: 0,
+                                  cowType: player.cowType,
+                                ),
+                            ],
+                            cowSize: 17,
+                          ),
+                          Text(
+                            'In Hand ( ${player.cowsInHand} )',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                ),
+                          ),
+                        ],
+                      ),
+                      //const Spacer(),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CowStackWidget(
+                            cows: player.capturedCows,
+                            cowSize: 17,
+                          ),
+                          Text(
+                            'Captured ( ${player.capturedCows.length} )',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            onPressed: () {
+              // showMenu(
+              //   context: context,
+              //   position: RelativeRect.fromRect(, container),
+              //   items: [
+              //     const PopupMenuItem(
+              //       child: Text('Quit'),
+              //     ),
+              //   ],
+              // );
+            },
+            icon: const Icon(Icons.menu),
           ),
         ],
       ),
@@ -156,7 +208,6 @@ class CowStackWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(2),
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
       width: (cowSize * 12 * overlapFactor) + 15,
       height: cowSize,
       decoration: BoxDecoration(

@@ -4,10 +4,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../models/player_model.dart';
 
-part 'players_provider.g.dart';
+part 'game_players_provider.g.dart';
 
 @riverpod
-Stream<List<PlayerModel>> players(PlayersRef ref) {
+Stream<List<PlayerModel>> gamePlayers(GamePlayersRef ref) {
   return SupabaseChatCore.instance.users().asyncMap(
         (event) => event
             .map(

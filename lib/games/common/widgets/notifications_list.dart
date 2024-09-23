@@ -6,8 +6,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/game_notification.dart';
 import '../providers/game_notifications_provider.dart';
-import '../providers/online_game_provider.dart';
-import '../screens/waiting_screen.dart';
+import '../providers/game_online_provider.dart';
+import '../screens/game_waiting_screen.dart';
 
 class NotificationList extends StatefulHookConsumerWidget {
   const NotificationList({
@@ -26,9 +26,9 @@ class _NotificationListState extends ConsumerState<NotificationList> {
       await ref
           .read(gameNotificationsProvider.notifier)
           .viewNotification(notification);
-      await ref.read(onlineGameProvider().notifier).joinGame(notification.gameId);
+      await ref.read(gameOnlineProvider().notifier).joinGame(notification.gameId);
       if (mounted) {
-        context.goNamed(WaitingScreen.routename, extra: notification.gameId);
+        context.goNamed(GameWaitingScreen.routename, extra: notification.gameId);
       }
     } on PostgrestException catch (e) {
       if (mounted) {

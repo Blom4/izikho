@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'online_game_provider.dart';
+part of 'game_online_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$onlineGameHash() => r'9e5cfbc949d7e573cd9d0fa055ab7e3c80aae296';
+String _$gameOnlineHash() => r'2ebb32ef7d49628efefe79bcaf93c1c8b137a8de';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,7 +29,7 @@ class _SystemHash {
   }
 }
 
-abstract class _$OnlineGame
+abstract class _$GameOnline
     extends BuildlessAutoDisposeStreamNotifier<GameModel> {
   late final String? channel;
 
@@ -38,27 +38,27 @@ abstract class _$OnlineGame
   ]);
 }
 
-/// See also [OnlineGame].
-@ProviderFor(OnlineGame)
-const onlineGameProvider = OnlineGameFamily();
+/// See also [GameOnline].
+@ProviderFor(GameOnline)
+const gameOnlineProvider = GameOnlineFamily();
 
-/// See also [OnlineGame].
-class OnlineGameFamily extends Family<AsyncValue<GameModel>> {
-  /// See also [OnlineGame].
-  const OnlineGameFamily();
+/// See also [GameOnline].
+class GameOnlineFamily extends Family<AsyncValue<GameModel>> {
+  /// See also [GameOnline].
+  const GameOnlineFamily();
 
-  /// See also [OnlineGame].
-  OnlineGameProvider call([
+  /// See also [GameOnline].
+  GameOnlineProvider call([
     String? channel,
   ]) {
-    return OnlineGameProvider(
+    return GameOnlineProvider(
       channel,
     );
   }
 
   @override
-  OnlineGameProvider getProviderOverride(
-    covariant OnlineGameProvider provider,
+  GameOnlineProvider getProviderOverride(
+    covariant GameOnlineProvider provider,
   ) {
     return call(
       provider.channel,
@@ -77,30 +77,30 @@ class OnlineGameFamily extends Family<AsyncValue<GameModel>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'onlineGameProvider';
+  String? get name => r'gameOnlineProvider';
 }
 
-/// See also [OnlineGame].
-class OnlineGameProvider
-    extends AutoDisposeStreamNotifierProviderImpl<OnlineGame, GameModel> {
-  /// See also [OnlineGame].
-  OnlineGameProvider([
+/// See also [GameOnline].
+class GameOnlineProvider
+    extends AutoDisposeStreamNotifierProviderImpl<GameOnline, GameModel> {
+  /// See also [GameOnline].
+  GameOnlineProvider([
     String? channel,
   ]) : this._internal(
-          () => OnlineGame()..channel = channel,
-          from: onlineGameProvider,
-          name: r'onlineGameProvider',
+          () => GameOnline()..channel = channel,
+          from: gameOnlineProvider,
+          name: r'gameOnlineProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$onlineGameHash,
-          dependencies: OnlineGameFamily._dependencies,
+                  : _$gameOnlineHash,
+          dependencies: GameOnlineFamily._dependencies,
           allTransitiveDependencies:
-              OnlineGameFamily._allTransitiveDependencies,
+              GameOnlineFamily._allTransitiveDependencies,
           channel: channel,
         );
 
-  OnlineGameProvider._internal(
+  GameOnlineProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -114,7 +114,7 @@ class OnlineGameProvider
 
   @override
   Stream<GameModel> runNotifierBuild(
-    covariant OnlineGame notifier,
+    covariant GameOnline notifier,
   ) {
     return notifier.build(
       channel,
@@ -122,10 +122,10 @@ class OnlineGameProvider
   }
 
   @override
-  Override overrideWith(OnlineGame Function() create) {
+  Override overrideWith(GameOnline Function() create) {
     return ProviderOverride(
       origin: this,
-      override: OnlineGameProvider._internal(
+      override: GameOnlineProvider._internal(
         () => create()..channel = channel,
         from: from,
         name: null,
@@ -138,14 +138,14 @@ class OnlineGameProvider
   }
 
   @override
-  AutoDisposeStreamNotifierProviderElement<OnlineGame, GameModel>
+  AutoDisposeStreamNotifierProviderElement<GameOnline, GameModel>
       createElement() {
-    return _OnlineGameProviderElement(this);
+    return _GameOnlineProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is OnlineGameProvider && other.channel == channel;
+    return other is GameOnlineProvider && other.channel == channel;
   }
 
   @override
@@ -157,18 +157,18 @@ class OnlineGameProvider
   }
 }
 
-mixin OnlineGameRef on AutoDisposeStreamNotifierProviderRef<GameModel> {
+mixin GameOnlineRef on AutoDisposeStreamNotifierProviderRef<GameModel> {
   /// The parameter `channel` of this provider.
   String? get channel;
 }
 
-class _OnlineGameProviderElement
-    extends AutoDisposeStreamNotifierProviderElement<OnlineGame, GameModel>
-    with OnlineGameRef {
-  _OnlineGameProviderElement(super.provider);
+class _GameOnlineProviderElement
+    extends AutoDisposeStreamNotifierProviderElement<GameOnline, GameModel>
+    with GameOnlineRef {
+  _GameOnlineProviderElement(super.provider);
 
   @override
-  String? get channel => (origin as OnlineGameProvider).channel;
+  String? get channel => (origin as GameOnlineProvider).channel;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

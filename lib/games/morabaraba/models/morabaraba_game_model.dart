@@ -56,43 +56,6 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
   final int turnIndex;
   final MorabarabaGameAction gameAction;
 
-  MorabarabaGameModel updatedGameState(MorabarabaCowCell currentCowCell) {
-    var newGameState = switch (gameAction) {
-      MorabarabaGameAction.place => () {
-          var newGameState = placeCowGameState(currentCowCell);
-          if (newGameState.noCowToPlace) {
-            newGameState = newGameState.copyWith(
-              gameAction: MorabarabaGameAction.select,
-            );
-          }
-          return newGameState;
-        }(),
-      MorabarabaGameAction.select => selectCowToMoveGameState(currentCowCell),
-      MorabarabaGameAction.move => checkMoveGameState(currentCowCell),
-      MorabarabaGameAction.capture =>
-        selectCowToCaptureGameState(currentCowCell),
-    };
-    if (newGameState.gameAction == MorabarabaGameAction.select) {
-      final noValidMoves = newGameState.board
-          .allBoardValidMoves(newGameState.turnPlayer.cowType)
-          .isEmpty;
-      print('No valid moves $noValidMoves');
-      if (noValidMoves) {
-        newGameState = newGameState.copyWith(
-          turnIndex: newGameState.nextTurnIndex,
-          players: [
-            for (final player in newGameState.players)
-              if (player.isTurn)
-                player.copyWith(isTurn: false)
-              else
-                player.copyWith(isTurn: true)
-          ],
-        );
-      }
-    }
-    return newGameState;
-  }
-
   int get nextTurnIndex => (turnIndex + 1) % players.length;
 
   MorabarabaGameModel placeCowGameState(MorabarabaCowCell currentCowCell) {
@@ -227,6 +190,9 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
     if (currentCowCell.cowType == turnPlayer.cowType) {
       throw Exception('Please select another player cow');
     }
+    if (!noCowToPlace) {
+      throw Exception('Please Place A cow');
+    }
 
     final newBoard = board.captureCowBoardState(currentCowCell);
     newBoard.highlightCaptureCells(false);
@@ -253,7 +219,8 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
     );
   }
 
-  bool get noCowToPlace => players.every((e) => e.cowsInHand < 1);
+  // bool get noCowToPlace => players.every((e) => e.cowsInHand < 1);
+  bool get noCowToPlace => turnPlayer.cowsInHand < 1;
   MorabarabaPlayerModel get turnPlayer => players[turnIndex];
 
   @override

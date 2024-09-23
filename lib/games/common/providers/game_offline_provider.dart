@@ -2,17 +2,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 
-part 'offline_game_provider.g.dart';
+part 'game_offline_provider.g.dart';
 
 @riverpod
-OfflineGameMethods offlineGame(OfflineGameRef ref) {
-  return OfflineGameMethods(ref);
+GameOfflineMethods gameOffline(GameOfflineRef ref) {
+  return GameOfflineMethods(ref);
 }
 
-class OfflineGameMethods {
+class GameOfflineMethods {
   final Ref ref;
 
-  OfflineGameMethods(this.ref);
+  GameOfflineMethods(this.ref);
   // void newGame(GameOptions options) {
   //   switch (options.gameType) {
   //     case GameType.morabaraba:

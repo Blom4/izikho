@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../../../auth/model/profile_model.dart';
 import '../../common/models/player_model.dart';
-import 'play_card.dart';
+import '../../common/models/game_playing_card.dart';
 
 class KrusaidPlayerModel extends PlayerModel {
   static const playerType = GamePlayerType.krusaid;
-  final List<PlayCard> cards;
+  final List<GamePlayingCard> cards;
   final int index;
   final bool isShot;
   final int cardsToTake;
@@ -27,7 +27,7 @@ class KrusaidPlayerModel extends PlayerModel {
   KrusaidPlayerModel copyWith({
     String? id,
     String? username,
-    List<PlayCard>? cards,
+    List<GamePlayingCard>? cards,
     int? index,
     bool? isTurn,
     bool? isShot,
@@ -76,9 +76,9 @@ class KrusaidPlayerModel extends PlayerModel {
     return KrusaidPlayerModel(
       id: map['id'] as String,
       username: map['username'] as String,
-      cards: List<PlayCard>.from(
-        (map['cards'] as List<dynamic>).map<PlayCard>(
-          (x) => PlayCard.fromMap(x as Map<String, dynamic>),
+      cards: List<GamePlayingCard>.from(
+        (map['cards'] as List<dynamic>).map<GamePlayingCard>(
+          (x) => GamePlayingCard.fromMap(x as Map<String, dynamic>),
         ),
       ),
       index: map['index'] as int,

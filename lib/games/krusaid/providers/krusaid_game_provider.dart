@@ -2,8 +2,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/providers/supabase_provider.dart';
-import '../../common/providers/online_game_provider.dart';
-import '../models/play_card.dart';
+import '../../common/providers/game_online_provider.dart';
+import '../../common/models/game_playing_card.dart';
 import '../models/krusaid_game_model.dart';
 import '../models/krusaid_player_model.dart';
 
@@ -13,7 +13,7 @@ part 'krusaid_game_provider.g.dart';
 class KrusaidGame extends _$KrusaidGame {
   @override
   KrusaidGameState build(KrusaidGameModel game) {
-    final asyncGame = ref.watch(onlineGameProvider(game.id));
+    final asyncGame = ref.watch(gameOnlineProvider(game.id));
     return asyncGame.when(
       data: (data) => KrusaidGameState(data: data as KrusaidGameModel),
       error: (error, stackTrace) =>
@@ -37,7 +37,7 @@ class KrusaidGame extends _$KrusaidGame {
     }
   }
 
-  Future<void> play(PlayCard card, Playable playable) async {
+  Future<void> play(GamePlayingCard card, Playable playable) async {
     try {
       if (state.data.currentPlayer.isTurn) {
         state = KrusaidGameState.loading(data: state.data);

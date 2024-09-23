@@ -12,6 +12,9 @@ double responsiveScreenRatio(BuildContext context) {
 }
 
 class MorabarabaUtils {
+  static const midCellPosition = ['7,7', '2,7', '7,2', '12,7', '7,12'];
+  static const vSpecialCellPosition = ['0,7','4,7', '10,7','14,7'];
+  static const hSpecialCellPosition = ['7,0','7,4', '7,10','7,14'];
   static List<MorabarabaCell> generateBoardCells() {
     return List<MorabarabaCell>.generate(225, (index) {
       int row = index ~/ 15;
@@ -41,7 +44,7 @@ class MorabarabaUtils {
     });
   }
 
-   static bool _inBounds(int row, int col) {
+  static bool _inBounds(int row, int col) {
     if ((row < 0) || (col < 0)) {
       return false;
     }

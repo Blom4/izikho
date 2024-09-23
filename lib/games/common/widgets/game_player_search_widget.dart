@@ -5,8 +5,8 @@ import 'package:izikho/auth/model/profile_model.dart';
 
 import '../../../chat/providers/chat_users_provider.dart';
 
-class PlayerSearchWidget extends HookConsumerWidget {
-  const PlayerSearchWidget({
+class GamePlayerSearchWidget extends HookConsumerWidget {
+  const GamePlayerSearchWidget({
     super.key,
     required this.hintText,
     required this.onPlayerSelected,

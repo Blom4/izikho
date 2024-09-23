@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:izikho/games/common/providers/online_game_provider.dart';
+import 'package:izikho/games/common/providers/game_online_provider.dart';
 
-class WaitingScreen extends StatefulHookConsumerWidget {
-  const WaitingScreen({
+class GameWaitingScreen extends StatefulHookConsumerWidget {
+  const GameWaitingScreen({
     super.key,
     required this.channel,
   });
-  static const routename = 'waiting_screen';
+  static const routename = 'game_waiting_screen';
   final String channel;
 
   @override
-  ConsumerState<WaitingScreen> createState() => _WaitingScreenState();
+  ConsumerState<GameWaitingScreen> createState() => _WaitingScreenState();
 }
 
-class _WaitingScreenState extends ConsumerState<WaitingScreen> {
+class _WaitingScreenState extends ConsumerState<GameWaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    ref.listen(onlineGameProvider(widget.channel), (_, next) {
+    ref.listen(gameOnlineProvider(widget.channel), (_, next) {
       if (next.hasValue && next.value!.allJoined) {
         context.goNamed(next.value!.gameType.route, extra: next.value!);
       }
     });
-    final asyncGame = ref.watch(onlineGameProvider(widget.channel));
+    final asyncGame = ref.watch(gameOnlineProvider(widget.channel));
     return Scaffold(
       appBar: AppBar(title: const Text("Waiting Screen")),
       body: Padding(

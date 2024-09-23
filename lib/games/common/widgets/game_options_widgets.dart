@@ -4,10 +4,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../auth/model/profile_model.dart';
 import '../../../common/widgets/my_button.dart';
-import '../../morabaraba/constants/colors.dart';
+
 import '../models/game_model.dart';
 import '../models/player_model.dart';
-import 'player_search_widget.dart';
+import '../utils/game_utils.dart';
+import 'game_player_search_widget.dart';
 
 class GameOptionTileWidget extends StatelessWidget {
   const GameOptionTileWidget({
@@ -33,11 +34,11 @@ class GameOptionTileWidget extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
-          color: secondaryColor,
+          color: GameUtils.secondaryColor,
           borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
-              color: shadowColor,
+              color: GameUtils.shadowColor,
               spreadRadius: 1.5,
               blurRadius: 2,
             )
@@ -88,11 +89,11 @@ class GameOptionsContainerWidget extends StatelessWidget {
       width: double.infinity,
       //padding: const EdgeInsets.all(10),
       decoration: const BoxDecoration(
-        color: secondaryColor,
+        color: GameUtils.secondaryColor,
         borderRadius: BorderRadius.all(Radius.circular(10)),
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
+            color: GameUtils.shadowColor,
             spreadRadius: 1.5,
             blurRadius: 2,
           )
@@ -104,14 +105,14 @@ class GameOptionsContainerWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
-              color: secondaryColor,
+              color: GameUtils.secondaryColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: shadowColor,
+                  color: GameUtils.shadowColor,
                   spreadRadius: 1.5,
                   blurRadius: 2,
                 )
@@ -173,7 +174,7 @@ class GameOptionCardWidget extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: secondaryColor,
+        color: GameUtils.secondaryColor,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
       ),
@@ -183,7 +184,7 @@ class GameOptionCardWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: secondaryColor,
+              color: GameUtils.secondaryColor,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 topRight: Radius.circular(10),
@@ -228,9 +229,9 @@ class GameOptionCardWidget extends StatelessWidget {
   }
 }
 
-class PlayersGameOptionCardWidget<T extends PlayerModel>
+class GamePlayersOptionCardWidget<T extends PlayerModel>
     extends HookConsumerWidget {
-  const PlayersGameOptionCardWidget({
+  const GamePlayersOptionCardWidget({
     super.key,
     required this.playerType,
     required this.onSearchOnlinePlayer,
@@ -248,7 +249,7 @@ class PlayersGameOptionCardWidget<T extends PlayerModel>
         useSafeArea: true,
         showDragHandle: true,
         builder: (context) {
-          return PlayerSearchWidget(
+          return GamePlayerSearchWidget(
             hintText: 'Search Players',
             onPlayerSelected: (item) {
               Navigator.of(context).pop(item);

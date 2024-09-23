@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 
 
-class PlayerWidget extends StatelessWidget {
-  const PlayerWidget({
+class KrusaidPlayerWidget extends StatelessWidget {
+  const KrusaidPlayerWidget({
     super.key,
     required this.player,
   });

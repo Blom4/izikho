@@ -1,24 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'game_utils_provider.dart';
+part of 'game_offline_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameUtilsHash() => r'768b0749d4202aaf35fd734b47a0278fe8844ce0';
+String _$gameOfflineHash() => r'0530e3cd11f1bf68eea7dc13d26edcd8b99b602c';
 
-/// See also [gameUtils].
-@ProviderFor(gameUtils)
-final gameUtilsProvider = AutoDisposeProvider<GameUtils>.internal(
-  gameUtils,
-  name: r'gameUtilsProvider',
+/// See also [gameOffline].
+@ProviderFor(gameOffline)
+final gameOfflineProvider = AutoDisposeProvider<GameOfflineMethods>.internal(
+  gameOffline,
+  name: r'gameOfflineProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$gameUtilsHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$gameOfflineHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef GameUtilsRef = AutoDisposeProviderRef<GameUtils>;
+typedef GameOfflineRef = AutoDisposeProviderRef<GameOfflineMethods>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

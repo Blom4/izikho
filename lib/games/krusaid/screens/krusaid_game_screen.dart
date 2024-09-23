@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:izikho/games/krusaid/dialogs/deck_dialog.dart';
-import 'package:izikho/games/krusaid/dialogs/eigtht_dialog.dart';
-import 'package:izikho/games/krusaid/dialogs/joker_dialog.dart';
-import 'package:izikho/games/krusaid/dialogs/shot_dialog.dart';
+
+import 'package:izikho/games/common/dialogs/deck_dialog.dart';
+import 'package:izikho/games/krusaid/dialogs/krusaid_dialogs.dart';
+
 import 'package:playing_cards/playing_cards.dart';
 
 import '../../../common/screens/home_screen.dart';
-import '../../common/providers/online_game_provider.dart';
+import '../../common/providers/game_online_provider.dart';
 import '../models/krusaid_game_model.dart';
 import '../models/krusaid_player_model.dart';
-import '../models/play_card.dart';
+import '../../common/models/game_playing_card.dart';
 import '../providers/krusaid_game_provider.dart';
 import '../widgets/krusaid_game_widget.dart';
 
@@ -29,7 +29,8 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
   @override
   void initState() {
     super.initState();
-    ref.listenManual(onlineGameProvider(widget.game.id).future, (_, next) async {
+    ref.listenManual(gameOnlineProvider(widget.game.id).future,
+        (_, next) async {
       var game = await next as KrusaidGameModel;
       if (game.currentPlayer.isTurn && game.currentPlayer.isShot) {
         await handleShot(game.currentPlayer);
@@ -40,7 +41,7 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
     );
   }
 
-  Future<void> handlePlayCard(PlayCard card) async {
+  Future<void> handlePlayCard(GamePlayingCard card) async {
     final game = ref.read(krusaidGameProvider(widget.game)).data;
     if (!game.currentPlayer.isTurn) {
       return;
@@ -82,7 +83,7 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
     }
   }
 
-  void handleDeckCard(PlayCard card) async {
+  void handleDeckCard(GamePlayingCard card) async {
     final game = ref.read(krusaidGameProvider(widget.game)).data;
     if (!game.currentPlayer.isTurn) {
       return;
@@ -137,29 +138,6 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
     final gameState = ref.watch(krusaidGameProvider(widget.game));
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text(
-        //     "Krusaid",
-        //     style: TextStyle(
-        //       fontSize: 18,
-        //       fontWeight: FontWeight.w700,
-        //       fontStyle: FontStyle.italic,
-        //       letterSpacing: 2,
-        //     ),
-        //   ),
-        //   actions: [
-        //     IconButton(
-        //       icon: const Icon(Icons.share),
-        //       onPressed: () {},
-        //     ),
-        //     IconButton(
-        //       icon: const Icon(Icons.menu),
-        //       onPressed: () {},
-        //     )
-        //   ],
-        // ),
-        // bottomNavigationBar:
-        //     !Responsive.isMobile(context) ? null : const CustomBottomAppBar(),
         body: Stack(
           children: [
             KrusaidGameWidget(
@@ -180,6 +158,7 @@ class _KrusaidGameScreenState extends ConsumerState<KrusaidGameScreen> {
                 ),
               ),
             if (gameState.data.gameOver)
+            
               Dialog.fullscreen(
                 backgroundColor: Colors.black45,
                 child: AlertDialog(

@@ -23,14 +23,41 @@ class MorabarabaGame extends _$MorabarabaGame {
     );
   }
 
-  // void startGame(MorabarabaGameOptions options) {
-  //   final newGame = state.copyWith(
-  //     players:options.players,
-  //   );
-  //   state = newGame;
-  // }
+  void updateGame(MorabarabaCowCell currentCowCell) {
+    final newGameState = switch (state.gameAction) {
+      MorabarabaGameAction.place => () {
+          var newGameState = state.placeCowGameState(currentCowCell);
+          if (newGameState.noCowToPlace) {
+            newGameState = newGameState.copyWith(
+              gameAction: MorabarabaGameAction.select,
+            );
+          }
+          return newGameState;
+        }(),
+      MorabarabaGameAction.select =>
+        state.selectCowToMoveGameState(currentCowCell),
+      MorabarabaGameAction.move => state.checkMoveGameState(currentCowCell),
+      MorabarabaGameAction.capture =>
+        state.selectCowToCaptureGameState(currentCowCell)
+    };
+    final allValidMoves = newGameState.board.allBoardValidMoves(
+      newGameState.turnPlayer.cowType,
+    );
 
-  void updatGameState(MorabarabaCowCell currentCowCell) {
-    state = state.updatedGameState(currentCowCell);
+    if (newGameState.gameAction == MorabarabaGameAction.select &&
+        allValidMoves.isEmpty) {
+      state = newGameState.copyWith(
+        turnIndex: newGameState.nextTurnIndex,
+        players: [
+          for (final player in newGameState.players)
+            if (player.isTurn)
+              player.copyWith(isTurn: false)
+            else
+              player.copyWith(isTurn: true)
+        ],
+      );
+    } else {
+      state = newGameState;
+    }
   }
 }

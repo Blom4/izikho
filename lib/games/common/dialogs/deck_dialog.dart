@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 
-import '../models/play_card.dart';
+import '../models/game_playing_card.dart';
 
 extension DeckDialog on BuildContext {
-  Future<PlayCard?> showDeckDialog(List<PlayCard> playableCards) =>
-      showDialog<PlayCard>(
+  Future<GamePlayingCard?> showDeckDialog(List<GamePlayingCard> playableCards) =>
+      showDialog<GamePlayingCard>(
         context: this,
         barrierDismissible: false,
         builder: (context) {

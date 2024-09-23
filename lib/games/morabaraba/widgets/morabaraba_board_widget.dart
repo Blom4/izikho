@@ -51,31 +51,31 @@ class MorabarabaGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
+    return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 15,
-      childAspectRatio: aspectRatio,
-      children: List<Widget>.generate(
-        board.boardCells.length,
-        (int index) {
-          if (board.boardCells[index].type != MorabarabaCellType.none) {
-            if (board.boardCells[index] is MorabarabaCowCell) {
-              return MorabarabaCowCellWidget(
-                cell: board.boardCells[index] as MorabarabaCowCell,
-                onTap: () => updateBoard(
-                  board.boardCells[index] as MorabarabaCowCell,
-                ),
-              );
-            }
-            // return Center(
-            //   child: Text("$index"),
-            // );
-          }
-          return Container(
-            color: Colors.transparent,
-          );
-        },
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 15,
+        childAspectRatio: aspectRatio,
       ),
+      itemCount: 15 * 15,
+      itemBuilder: (context, index) {
+        if (board.boardCells[index].type != MorabarabaCellType.none) {
+          if (board.boardCells[index] is MorabarabaCowCell) {
+            return MorabarabaCowCellWidget(
+              cell: board.boardCells[index] as MorabarabaCowCell,
+              onTap: () => updateBoard(
+                board.boardCells[index] as MorabarabaCowCell,
+              ),
+            );
+          }
+          // return Center(
+          //   child: Text("$index"),
+          // );
+        }
+        return Container(
+          color: Colors.transparent,
+        );
+      },
     );
   }
 }

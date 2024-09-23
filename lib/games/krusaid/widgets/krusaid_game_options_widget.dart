@@ -110,7 +110,7 @@ class _KrusaidOnlineOptionsWidgetState
             ),
           ],
         ),
-        PlayersGameOptionCardWidget<KrusaidPlayerModel>(
+        GamePlayersOptionCardWidget<KrusaidPlayerModel>(
           onSearchOnlinePlayer: searchOnlinePlayer,
           playerType: GamePlayerType.krusaid,
         ),

@@ -4,7 +4,7 @@ import 'package:playing_cards/playing_cards.dart';
 import '../../common/models/game_model.dart';
 import '../../common/models/player_model.dart';
 import 'krusaid_player_model.dart';
-import 'play_card.dart';
+import '../../common/models/game_playing_card.dart';
 
 class KrusaidGameOptions extends GameOptions {
   final double servedCards;
@@ -54,8 +54,8 @@ class KrusaidGameState {
 }
 
 class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
-  final List<PlayCard> playedCards;
-  final List<PlayCard> deck;
+  final List<GamePlayingCard> playedCards;
+  final List<GamePlayingCard> deck;
   final int turnIndex;
   final bool served;
   bool direction;
@@ -92,14 +92,14 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
       ),
       started: map['started'] as bool,
       gameOver: map['game_over'] as bool,
-      playedCards: List<PlayCard>.from(
-        (extra['played_cards'] as List<dynamic>).map<PlayCard>(
-          (x) => PlayCard.fromMap(x as Map<String, dynamic>),
+      playedCards: List<GamePlayingCard>.from(
+        (extra['played_cards'] as List<dynamic>).map<GamePlayingCard>(
+          (x) => GamePlayingCard.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      deck: List<PlayCard>.from(
-        (extra['deck'] as List<dynamic>).map<PlayCard>(
-          (x) => PlayCard.fromMap(x as Map<String, dynamic>),
+      deck: List<GamePlayingCard>.from(
+        (extra['deck'] as List<dynamic>).map<GamePlayingCard>(
+          (x) => GamePlayingCard.fromMap(x as Map<String, dynamic>),
         ),
       ),
       playable: Playable.values.firstWhere((e) => e.name == extra['playable']),
@@ -139,8 +139,8 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     List<KrusaidPlayerModel>? players,
     bool? started,
     bool? gameOver,
-    List<PlayCard>? playedCards,
-    List<PlayCard>? deck,
+    List<GamePlayingCard>? playedCards,
+    List<GamePlayingCard>? deck,
     Playable? playable,
     int? turnIndex,
     double? servedCards,
@@ -200,7 +200,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
 
   void shuffleDeck() {
     if (playedCards.isNotEmpty) {
-      PlayCard topcardplayed = playedCards.removeLast();
+      GamePlayingCard topcardplayed = playedCards.removeLast();
       deck.addAll(playedCards);
       playedCards.clear();
       playedCards.add(topcardplayed);
@@ -213,7 +213,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
       List<KrusaidPlayerModel> players = [];
       shuffleDeck();
       for (KrusaidPlayerModel player in this.players) {
-        List<PlayCard> playerCards = [];
+        List<GamePlayingCard> playerCards = [];
         for (int i = 0; i < servedCards; i++) {
           if (deck.isNotEmpty) {
             playerCards.add(deck.removeLast());
@@ -226,7 +226,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     throw Exception('Room already served');
   }
 
-  KrusaidGameModel nextPlayState(PlayCard card, Playable playable) {
+  KrusaidGameModel nextPlayState(GamePlayingCard card, Playable playable) {
     if (card.value == CardValue.jack) {
       direction = !direction;
     }
@@ -267,7 +267,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
   }
 
   KrusaidGameModel nextDeckState() {
-    PlayCard topDeckCard = deck.removeLast();
+    GamePlayingCard topDeckCard = deck.removeLast();
 
     if (deck.isEmpty) {
       shuffleDeck();
@@ -286,7 +286,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
 
   KrusaidGameModel nextShotState(KrusaidPlayerModel shotPlayer) {
     KrusaidPlayerModel nextPlayer = getNextPlayer();
-    final List<PlayCard> takenCards = [];
+    final List<GamePlayingCard> takenCards = [];
     for (int i = 0; i < shotPlayer.cardsToTake; i++) {
       var topCard = deck.removeLast();
       if (deck.isEmpty) {
@@ -313,7 +313,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     );
   }
 
-  KrusaidPlayerModel getNextPlayer([PlayCard? card]) {
+  KrusaidPlayerModel getNextPlayer([GamePlayingCard? card]) {
     if (gameOver || card == null) {
       return players[_nextIndex].copyWith(
         isShot: false,
@@ -368,7 +368,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
     }
   }
 
-  KrusaidPlayerModel _getCurrentPlayer(PlayCard card) => currentPlayer.copyWith(
+  KrusaidPlayerModel _getCurrentPlayer(GamePlayingCard card) => currentPlayer.copyWith(
         isTurn: false,
         isShot: false,
         cardsToTake: 0,
@@ -378,7 +378,7 @@ class KrusaidGameModel extends GameModel<KrusaidPlayerModel> {
             .toList(),
       );
 
-  bool isPlayable(PlayCard card) {
+  bool isPlayable(GamePlayingCard card) {
     return playable == Playable.any ||
         card.value == CardValue.eight ||
         card.suit == Suit.joker ||

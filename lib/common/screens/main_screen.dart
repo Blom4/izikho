@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../chat/screens/chat_rooms_screen.dart';
-import '../../games/common/screens/game_screen.dart';
+import '../../games/common/screens/game_home_screen.dart';
 import 'home_screen.dart';
 import '../../auth/screens/profile_screen.dart';
 import '../responsive/responsive.dart';
@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     CustomBottomAppBarItem(
       "Games",
       Icons.games,
-      GameScreen.routename,
+      GameHomeScreen.routename,
     ),
     CustomBottomAppBarItem(
       "Profile",

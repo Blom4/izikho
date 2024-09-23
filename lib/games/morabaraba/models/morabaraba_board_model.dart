@@ -1,40 +1,35 @@
-import 'package:flutter/foundation.dart';
-
-import 'package:izikho/games/morabaraba/models/morabaraba_cell_models.dart';
+import 'morabaraba_cell_models.dart';
 
 class MorabarabaBoardModel {
   final List<MorabarabaCell> boardCells;
-  final List<MorabarabaCowCell> blackCowPositions;
-  final List<MorabarabaCowCell> whiteCowPositions;
   final MorabarabaCowCell? lastCowCellPlayed;
   final MorabarabaCowCell? selectedCowToMove;
 
   const MorabarabaBoardModel({
     required this.boardCells,
-    this.blackCowPositions = const [],
-    this.whiteCowPositions = const [],
     this.lastCowCellPlayed,
     this.selectedCowToMove,
   });
-
-  List<MorabarabaCowCell> get cowCells =>
-      boardCells.whereType<MorabarabaCowCell>().toList();
-
   MorabarabaBoardModel copyWith({
     List<MorabarabaCell>? boardCells,
-    List<MorabarabaCowCell>? blackCowPositions,
-    List<MorabarabaCowCell>? whiteCowPositions,
     MorabarabaCowCell? lastCowCellPlayed,
     MorabarabaCowCell? selectedCowToMove,
   }) {
     return MorabarabaBoardModel(
       boardCells: boardCells ?? this.boardCells,
-      blackCowPositions: blackCowPositions ?? this.blackCowPositions,
-      whiteCowPositions: whiteCowPositions ?? this.whiteCowPositions,
       lastCowCellPlayed: lastCowCellPlayed ?? this.lastCowCellPlayed,
       selectedCowToMove: selectedCowToMove ?? this.selectedCowToMove,
     );
   }
+
+  List<MorabarabaCowCell> get cowCells =>
+      boardCells.whereType<MorabarabaCowCell>().toList();
+  List<MorabarabaCowCell> get emptyCowPositions =>
+      cowCells.where((e) => e.cowType == MorabarabaCowType.none).toList();
+  List<MorabarabaCowCell> get blackCowPositions =>
+      cowCells.where((e) => e.cowType == MorabarabaCowType.black).toList();
+  List<MorabarabaCowCell> get whiteCowPositions =>
+      cowCells.where((e) => e.cowType == MorabarabaCowType.white).toList();
 
   MorabarabaBoardModel placeCowBoardState(MorabarabaCowCell currentCowCell) {
     boardCells[currentCowCell.cellIndex] = currentCowCell.copyWith(
@@ -45,14 +40,6 @@ class MorabarabaBoardModel {
           lastCowCellPlayed!.copyWith(isLastCowPlayed: false);
     }
     return copyWith(
-      blackCowPositions: [
-        ...blackCowPositions,
-        if (currentCowCell.cowType == MorabarabaCowType.black) currentCowCell,
-      ],
-      whiteCowPositions: [
-        ...whiteCowPositions,
-        if (currentCowCell.cowType == MorabarabaCowType.white) currentCowCell,
-      ],
       lastCowCellPlayed: currentCowCell.copyWith(
         isLastCowPlayed: true,
       ),
@@ -62,16 +49,17 @@ class MorabarabaBoardModel {
   MorabarabaBoardModel selectCowToMoveBoardState(
     MorabarabaCowCell currentCowCell,
   ) {
-    // if (selectedCowToMove != null) {
+    final newCowCell = currentCowCell.copyWith(isSelected: true);
+    boardCells[currentCowCell.cellIndex] = newCowCell;
+
+    // if (selectedCowToMove != null && selectedCowToMove != currentCowCell) {
     //   boardCells[selectedCowToMove!.cellIndex] = selectedCowToMove!.copyWith(
     //     isSelected: false,
     //   );
     // }
-    final newCowCell = currentCowCell.copyWith(isSelected: true);
-    boardCells[currentCowCell.cellIndex] = newCowCell;
 
     return copyWith(
-      selectedCowToMove: currentCowCell,
+      selectedCowToMove: newCowCell,
     );
   }
 
@@ -98,33 +86,17 @@ class MorabarabaBoardModel {
 
     return copyWith(
       selectedCowToMove: null,
-      blackCowPositions: [
-        ...blackCowPositions
-            .where((e) => e.cellIndex != selectedCowToMove!.cellIndex),
-        if (newCowCell.cowType == MorabarabaCowType.black) newCowCell
-      ],
-      whiteCowPositions: [
-        ...whiteCowPositions
-            .where((e) => e.cellIndex != selectedCowToMove!.cellIndex),
-        if (newCowCell.cowType == MorabarabaCowType.white) newCowCell
-      ],
       lastCowCellPlayed: newCowCell,
     );
   }
 
   MorabarabaBoardModel captureCowBoardState(MorabarabaCowCell currentCowCell) {
-    boardCells[currentCowCell.cellIndex] =
-        currentCowCell.copyWith(cowType: MorabarabaCowType.none);
+    final newCowCell = currentCowCell.copyWith(cowType: MorabarabaCowType.none);
+    boardCells[currentCowCell.cellIndex] = newCowCell;
 
     return copyWith(
-      blackCowPositions: [
-        ...blackCowPositions
-            .where((e) => e.cellIndex != currentCowCell.cellIndex),
-      ],
-      whiteCowPositions: [
-        ...blackCowPositions
-            .where((e) => e.cellIndex != currentCowCell.cellIndex),
-      ],
+      //lastCowCellPlayed: newCowCell,
+      selectedCowToMove: null,
     );
   }
 
@@ -132,90 +104,118 @@ class MorabarabaBoardModel {
     boardCells[lastCowCellPlayed!.cellIndex] = lastCowCellPlayed!.copyWith(
       isCaptureCell: isCaptureCells,
     );
-    if (captureCells.x.length >= 2) {
-      for (var pos in captureCells.x) {
-        boardCells[pos.cellIndex] = pos.copyWith(isCaptureCell: isCaptureCells);
-      }
-    }
-    if (captureCells.y.length >= 2) {
-      for (var pos in captureCells.y) {
-        boardCells[pos.cellIndex] = pos.copyWith(isCaptureCell: isCaptureCells);
-      }
+    for (var pos in captureCells) {
+      boardCells[pos.cellIndex] = pos.copyWith(isCaptureCell: isCaptureCells);
     }
   }
 
-  ({List<MorabarabaCowCell> x, List<MorabarabaCowCell> y}) get captureCells {
+  bool get isCowCapture => captureCells.isNotEmpty;
+
+  List<MorabarabaCowCell> get captureCells {
     if (lastCowCellPlayed == null) {
-      return (x: [], y: []);
+      return [];
     }
 
     int steps = lastCowCellPlayed!.isMidCellPosition ? 1 : 2;
 
-    List<MorabarabaCowCell> yCaptures = [];
-    List<MorabarabaCowCell> xCaptures = [];
-    for (var captureMove in MorabarabaCowCaptureMove.values) {
-      int i = 1;
-      int count = 0;
-      while (true) {
-        final newCellPosition = (
-          row: lastCowCellPlayed!.row + i * captureMove.x,
-          col: lastCowCellPlayed!.col + i * captureMove.y,
-        );
+    final leftCaptures = findCaptures(
+      lastCowCellPlayed!,
+      MorabarabaCowMove.left,
+      steps,
+    );
+    final rightCaptures = findCaptures(
+      lastCowCellPlayed!,
+      MorabarabaCowMove.right,
+      steps,
+    );
+    final topCaptures = findCaptures(
+      lastCowCellPlayed!,
+      MorabarabaCowMove.top,
+      steps,
+    );
+    final bottomCaptures = findCaptures(
+      lastCowCellPlayed!,
+      MorabarabaCowMove.bottom,
+      steps,
+    );
 
-        final newBoardCell = boardCells.firstWhere(
-          (e) => e.position == newCellPosition,
-          orElse: () => MorabarabaCell(
-            row: -1,
-            col: -1,
-            cellIndex: -1,
-          ),
-        );
-        i++;
+    if (lastCowCellPlayed!.isMidCellPosition) {
+      return [
+        if (topCaptures.isNotEmpty && bottomCaptures.isNotEmpty) ...[
+          ...topCaptures,
+          ...bottomCaptures
+        ],
+        if (leftCaptures.isNotEmpty && rightCaptures.isNotEmpty) ...[
+          ...leftCaptures,
+          ...rightCaptures
+        ]
+      ];
+    }
+    if (lastCowCellPlayed!.isHSpecialCellPosition) {
+      return [
+        if (topCaptures.length == 2) ...topCaptures,
+        if (bottomCaptures.length == 2) ...bottomCaptures,
+        if (leftCaptures.isNotEmpty && rightCaptures.isNotEmpty) ...[
+          ...leftCaptures,
+          ...rightCaptures
+        ]
+      ];
+    }
+    if (lastCowCellPlayed!.isVSpecialCellPosition) {
+      return [
+        if (leftCaptures.length == 2) ...leftCaptures,
+        if (rightCaptures.length == 2) ...rightCaptures,
+        if (topCaptures.isNotEmpty && bottomCaptures.isNotEmpty) ...[
+          ...topCaptures,
+          ...bottomCaptures
+        ]
+      ];
+    }
+    return [
+      if (leftCaptures.length == 2) ...leftCaptures,
+      if (rightCaptures.length == 2) ...rightCaptures,
+      if (topCaptures.length == 2) ...topCaptures,
+      if (bottomCaptures.length == 2) ...bottomCaptures,
+    ];
+  }
 
-        if (newBoardCell.type == MorabarabaCellType.none || count == steps) {
+  List<MorabarabaCowCell> findCaptures(
+      MorabarabaCell cell, MorabarabaCowMove move, steps) {
+    List<MorabarabaCowCell> captures = [];
+    int i = 1;
+    int count = 0;
+    while (true) {
+      final newRow = lastCowCellPlayed!.row + i * move.x;
+      final newCol = lastCowCellPlayed!.col + i * move.y;
+      final newCellPosition = '$newRow,$newCol';
+      i++;
+
+      final newBoardCell = boardCells.firstWhere(
+        (e) => e.position == newCellPosition,
+        orElse: () => MorabarabaCell(row: -1, col: -1, cellIndex: -1),
+      );
+
+      if (count == steps) {
+        break;
+      }
+
+      if (newBoardCell.type == MorabarabaCellType.none) {
+        break;
+      }
+
+      if (newBoardCell is MorabarabaCowCell) {
+        if (newBoardCell.cowType != lastCowCellPlayed!.cowType) {
+          break;
+        }
+        if (newBoardCell.hasNoCow) {
           break;
         }
 
-        if (newBoardCell is MorabarabaCowCell) {
-          if (newBoardCell.hasNoCow ||
-              newBoardCell.cowType != lastCowCellPlayed!.cowType) {
-            break;
-          }
-
-          if (captureMove.x == 0) {
-            xCaptures.add(newBoardCell);
-            count++;
-          }
-          if (captureMove.y == 0) {
-            yCaptures.add(newBoardCell);
-            count++;
-          }
-        }
+        captures.add(newBoardCell);
+        count++;
       }
     }
-    return (x: xCaptures, y: yCaptures);
-  }
-
-  bool get isCowCapture {
-    bool cowCapture = false;
-    if ((captureCells.x.length >= 2 || captureCells.y.length >= 2)) {
-      if (captureCells.x.length == 2 || captureCells.y.length == 2) {
-        if (lastCowCellPlayed!.isVSpecialCellPosition) {
-          if (!(captureCells.y.every((e) => e.isMidCellPosition))) {
-            cowCapture = true;
-          }
-        } else if (lastCowCellPlayed!.isHSpecialCellPosition) {
-          if (!(captureCells.x.every((e) => e.isMidCellPosition))) {
-            cowCapture = true;
-          }
-        } else {
-          cowCapture = true;
-        }
-      } else {
-        cowCapture = true;
-      }
-    }
-    return cowCapture;
+    return captures;
   }
 
   List<MorabarabaCowCell> getCurrentCowValidMoves(
@@ -225,10 +225,9 @@ class MorabarabaBoardModel {
     for (var cowMove in MorabarabaCowMove.values) {
       int i = 1;
       while (true) {
-        final newCellPosition = (
-          row: currentCowCell.row + i * cowMove.x,
-          col: currentCowCell.col + i * cowMove.y,
-        );
+        final newRow = currentCowCell.row + i * cowMove.x;
+        final newCol = currentCowCell.col + i * cowMove.y;
+        final newCellPosition = '$newRow,$newCol';
         i++;
 
         final newBoardCell = boardCells.firstWhere(
@@ -254,31 +253,29 @@ class MorabarabaBoardModel {
 
   Set<MorabarabaCowCell> allBoardValidMoves(MorabarabaCowType cowTurn) {
     Set<MorabarabaCowCell> allMoves = {};
-    if (lastCowCellPlayed != null) {
-      if (cowTurn == MorabarabaCowType.white) {
-        for (var pos in whiteCowPositions) {
-          allMoves = <MorabarabaCowCell>{
-            ...allMoves,
-            ...getCurrentCowValidMoves(pos)
-          };
-        }
-      } else {
-        for (var pos in blackCowPositions) {
-          allMoves = <MorabarabaCowCell>{
-            ...allMoves,
-            ...getCurrentCowValidMoves(pos)
-          };
-        }
+
+    if (cowTurn == MorabarabaCowType.white) {
+      for (var pos in whiteCowPositions) {
+        allMoves = <MorabarabaCowCell>{
+          ...allMoves,
+          ...getCurrentCowValidMoves(pos)
+        };
+      }
+    } else {
+      for (var pos in blackCowPositions) {
+        allMoves = <MorabarabaCowCell>{
+          ...allMoves,
+          ...getCurrentCowValidMoves(pos)
+        };
       }
     }
+
     return allMoves;
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'boardCells': boardCells.map((x) => x.toMap()).toList(),
-      'blackCowPositions': blackCowPositions.map((x) => x.toMap()).toList(),
-      'whiteCowPositions': whiteCowPositions.map((x) => x.toMap()).toList(),
       'lastCowCellPlayed': lastCowCellPlayed?.toMap(),
       'selectedCowToMove': selectedCowToMove?.toMap(),
     };
@@ -291,41 +288,17 @@ class MorabarabaBoardModel {
           (x) => MorabarabaCell.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      blackCowPositions: List<MorabarabaCowCell>.from(
-        (map['blackCowPositions'] as List<int>).map<MorabarabaCowCell>(
-          (x) => MorabarabaCowCell.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      whiteCowPositions: List<MorabarabaCowCell>.from(
-        (map['whiteCowPositions'] as List<int>).map<MorabarabaCowCell>(
-          (x) => MorabarabaCowCell.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
       lastCowCellPlayed: map['lastCowCellPlayed'],
       selectedCowToMove: map['selectedCowToMove'],
     );
   }
 
   @override
-  String toString() =>
-      'MorabarabaBoardModel(boardCells: $boardCells, blackCowPositions: $blackCowPositions, whiteCowPositions: $whiteCowPositions)';
-
-  @override
-  bool operator ==(covariant MorabarabaBoardModel other) {
-    if (identical(this, other)) return true;
-
-    return listEquals(other.boardCells, boardCells) &&
-        listEquals(other.blackCowPositions, blackCowPositions) &&
-        listEquals(other.whiteCowPositions, whiteCowPositions) &&
-        other.lastCowCellPlayed == lastCowCellPlayed &&
-        other.selectedCowToMove == selectedCowToMove;
-  }
-
-  @override
-  int get hashCode =>
-      boardCells.hashCode ^
-      blackCowPositions.hashCode ^
-      whiteCowPositions.hashCode ^
-      lastCowCellPlayed.hashCode ^
-      selectedCowToMove.hashCode;
+  String toString() => '''
+        MorabarabaBoardModel(
+          boardCells: $boardCells, 
+          blackCowPositions: $blackCowPositions, 
+          whiteCowPositions: $whiteCowPositions
+        )
+      ''';
 }
