@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'krusaid_game_provider.dart';
+part of 'ak47_game_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$krusaidGameHash() => r'14b4dbc88ac833d8978a03315d1d6ec9ffab9062';
+String _$ak47GameHash() => r'0ad1f901c4ab08534d80d2d02da7fc09db7129d7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,36 +29,35 @@ class _SystemHash {
   }
 }
 
-abstract class _$KrusaidGame
-    extends BuildlessAutoDisposeNotifier<KrusaidGameState> {
-  late final KrusaidGameModel game;
+abstract class _$Ak47Game extends BuildlessAutoDisposeNotifier<Ak47GameState> {
+  late final Ak47GameModel game;
 
-  KrusaidGameState build(
-    KrusaidGameModel game,
+  Ak47GameState build(
+    Ak47GameModel game,
   );
 }
 
-/// See also [KrusaidGame].
-@ProviderFor(KrusaidGame)
-const krusaidGameProvider = KrusaidGameFamily();
+/// See also [Ak47Game].
+@ProviderFor(Ak47Game)
+const ak47GameProvider = Ak47GameFamily();
 
-/// See also [KrusaidGame].
-class KrusaidGameFamily extends Family<KrusaidGameState> {
-  /// See also [KrusaidGame].
-  const KrusaidGameFamily();
+/// See also [Ak47Game].
+class Ak47GameFamily extends Family<Ak47GameState> {
+  /// See also [Ak47Game].
+  const Ak47GameFamily();
 
-  /// See also [KrusaidGame].
-  KrusaidGameProvider call(
-    KrusaidGameModel game,
+  /// See also [Ak47Game].
+  Ak47GameProvider call(
+    Ak47GameModel game,
   ) {
-    return KrusaidGameProvider(
+    return Ak47GameProvider(
       game,
     );
   }
 
   @override
-  KrusaidGameProvider getProviderOverride(
-    covariant KrusaidGameProvider provider,
+  Ak47GameProvider getProviderOverride(
+    covariant Ak47GameProvider provider,
   ) {
     return call(
       provider.game,
@@ -77,30 +76,29 @@ class KrusaidGameFamily extends Family<KrusaidGameState> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'krusaidGameProvider';
+  String? get name => r'ak47GameProvider';
 }
 
-/// See also [KrusaidGame].
-class KrusaidGameProvider
-    extends AutoDisposeNotifierProviderImpl<KrusaidGame, KrusaidGameState> {
-  /// See also [KrusaidGame].
-  KrusaidGameProvider(
-    KrusaidGameModel game,
+/// See also [Ak47Game].
+class Ak47GameProvider
+    extends AutoDisposeNotifierProviderImpl<Ak47Game, Ak47GameState> {
+  /// See also [Ak47Game].
+  Ak47GameProvider(
+    Ak47GameModel game,
   ) : this._internal(
-          () => KrusaidGame()..game = game,
-          from: krusaidGameProvider,
-          name: r'krusaidGameProvider',
+          () => Ak47Game()..game = game,
+          from: ak47GameProvider,
+          name: r'ak47GameProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$krusaidGameHash,
-          dependencies: KrusaidGameFamily._dependencies,
-          allTransitiveDependencies:
-              KrusaidGameFamily._allTransitiveDependencies,
+                  : _$ak47GameHash,
+          dependencies: Ak47GameFamily._dependencies,
+          allTransitiveDependencies: Ak47GameFamily._allTransitiveDependencies,
           game: game,
         );
 
-  KrusaidGameProvider._internal(
+  Ak47GameProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -110,11 +108,11 @@ class KrusaidGameProvider
     required this.game,
   }) : super.internal();
 
-  final KrusaidGameModel game;
+  final Ak47GameModel game;
 
   @override
-  KrusaidGameState runNotifierBuild(
-    covariant KrusaidGame notifier,
+  Ak47GameState runNotifierBuild(
+    covariant Ak47Game notifier,
   ) {
     return notifier.build(
       game,
@@ -122,10 +120,10 @@ class KrusaidGameProvider
   }
 
   @override
-  Override overrideWith(KrusaidGame Function() create) {
+  Override overrideWith(Ak47Game Function() create) {
     return ProviderOverride(
       origin: this,
-      override: KrusaidGameProvider._internal(
+      override: Ak47GameProvider._internal(
         () => create()..game = game,
         from: from,
         name: null,
@@ -138,14 +136,13 @@ class KrusaidGameProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
-      createElement() {
-    return _KrusaidGameProviderElement(this);
+  AutoDisposeNotifierProviderElement<Ak47Game, Ak47GameState> createElement() {
+    return _Ak47GameProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is KrusaidGameProvider && other.game == game;
+    return other is Ak47GameProvider && other.game == game;
   }
 
   @override
@@ -157,18 +154,18 @@ class KrusaidGameProvider
   }
 }
 
-mixin KrusaidGameRef on AutoDisposeNotifierProviderRef<KrusaidGameState> {
+mixin Ak47GameRef on AutoDisposeNotifierProviderRef<Ak47GameState> {
   /// The parameter `game` of this provider.
-  KrusaidGameModel get game;
+  Ak47GameModel get game;
 }
 
-class _KrusaidGameProviderElement
-    extends AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
-    with KrusaidGameRef {
-  _KrusaidGameProviderElement(super.provider);
+class _Ak47GameProviderElement
+    extends AutoDisposeNotifierProviderElement<Ak47Game, Ak47GameState>
+    with Ak47GameRef {
+  _Ak47GameProviderElement(super.provider);
 
   @override
-  KrusaidGameModel get game => (origin as KrusaidGameProvider).game;
+  Ak47GameModel get game => (origin as Ak47GameProvider).game;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

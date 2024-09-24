@@ -6,7 +6,7 @@ part of 'game_online_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$gameOnlineHash() => r'2ebb32ef7d49628efefe79bcaf93c1c8b137a8de';
+String _$gameOnlineHash() => r'6722db8eb7c148c28846efa0c807dc50a883fc14';
 
 /// Copied from Dart SDK
 class _SystemHash {

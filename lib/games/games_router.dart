@@ -1,8 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:izikho/games/common/screens/game_waiting_screen.dart';
 
+import 'ak47/ak47_router.dart';
 import 'common/screens/notifications_screen.dart';
 import 'common/screens/game_start_screen.dart';
+import 'fivecards/fivecards_router.dart';
 import 'krusaid/krusaid_router.dart';
 import 'morabaraba/morabaraba_routes.dart';
 
@@ -27,5 +29,7 @@ class GameRouter {
     ),
     KrusaidRouter.route,
     MorabarabaRouter.route,
+    FivecardsRouter.route,
+    Ak47Router.route,
   ];
 }

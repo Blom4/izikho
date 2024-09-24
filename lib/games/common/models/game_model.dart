@@ -1,7 +1,7 @@
-import '../../ak47/ak47_screen.dart';
+import '../../ak47/screens/ak47_game_screen.dart';
 import '../../casino/casino_screen.dart';
 import '../../chess/chess_screen.dart';
-import '../../fivecards/fivecards_sceen.dart';
+import '../../fivecards/screens/fivecards_game_screen.dart';
 import '../../krusaid/screens/krusaid_game_screen.dart';
 import '../../ludo/ludo_screen.dart';
 import '../../morabaraba/screens/morabaraba_game_screen.dart';
@@ -29,7 +29,7 @@ enum GameMode {
 
 enum GameType {
   ak47(
-    route: Ak47Screen.routeName,
+    route: Ak47GameScreen.routename,
     imageUri: "assets/images/eagle.jpg",
     maxPlayers: 4,
   ),
@@ -44,7 +44,7 @@ enum GameType {
     maxPlayers: 2,
   ),
   fivecards(
-    route: FivecardsScreen.routeName,
+    route: FivecardsGameScreen.routename,
     imageUri: "assets/images/eagle.jpg",
     maxPlayers: 4,
   ),

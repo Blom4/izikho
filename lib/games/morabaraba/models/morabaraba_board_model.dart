@@ -32,17 +32,22 @@ class MorabarabaBoardModel {
       cowCells.where((e) => e.cowType == MorabarabaCowType.white).toList();
 
   MorabarabaBoardModel placeCowBoardState(MorabarabaCowCell currentCowCell) {
-    boardCells[currentCowCell.cellIndex] = currentCowCell.copyWith(
-      isLastCowPlayed: true,
-    );
-    if (lastCowCellPlayed != null) {
-      boardCells[lastCowCellPlayed!.cellIndex] =
-          lastCowCellPlayed!.copyWith(isLastCowPlayed: false);
-    }
+    final newCowCell = currentCowCell.copyWith(isLastCowPlayed: true);
+
     return copyWith(
-      lastCowCellPlayed: currentCowCell.copyWith(
-        isLastCowPlayed: true,
-      ),
+      lastCowCellPlayed: newCowCell,
+      boardCells: [
+        for (final cell in boardCells)
+          if (cell is MorabarabaCowCell)
+            if (cell.cellIndex == newCowCell.cellIndex)
+              newCowCell
+            else if (cell.isLastCowPlayed)
+              cell.copyWith(isLastCowPlayed: false)
+            else
+              cell
+          else
+            cell
+      ],
     );
   }
 
@@ -50,16 +55,20 @@ class MorabarabaBoardModel {
     MorabarabaCowCell currentCowCell,
   ) {
     final newCowCell = currentCowCell.copyWith(isSelected: true);
-    boardCells[currentCowCell.cellIndex] = newCowCell;
-
-    // if (selectedCowToMove != null && selectedCowToMove != currentCowCell) {
-    //   boardCells[selectedCowToMove!.cellIndex] = selectedCowToMove!.copyWith(
-    //     isSelected: false,
-    //   );
-    // }
-
     return copyWith(
       selectedCowToMove: newCowCell,
+      boardCells: [
+        for (final cell in boardCells)
+          if (cell is MorabarabaCowCell)
+            if (cell.cellIndex == newCowCell.cellIndex)
+              newCowCell
+            else if (cell.isSelected)
+              cell.copyWith(isSelected: false)
+            else
+              cell
+          else
+            cell
+      ],
     );
   }
 
@@ -73,30 +82,44 @@ class MorabarabaBoardModel {
       isLastCowPlayed: true,
     );
 
-    boardCells[selectedCowToMove!.cellIndex] = selectedCowToMove!.copyWith(
-      cowType: MorabarabaCowType.none,
-      isSelected: false,
-    );
-
-    boardCells[lastCowCellPlayed!.cellIndex] = lastCowCellPlayed!.copyWith(
-      isLastCowPlayed: false,
-    );
-
-    boardCells[currentCowCell.cellIndex] = newCowCell;
-
     return copyWith(
       selectedCowToMove: null,
       lastCowCellPlayed: newCowCell,
+      boardCells: [
+        for (final cell in boardCells)
+          if (cell is MorabarabaCowCell)
+            if (cell.cellIndex == newCowCell.cellIndex)
+              newCowCell
+            else if (cell.isSelected)
+              cell.copyWith(
+                cowType: MorabarabaCowType.none,
+                isSelected: false,
+              )
+            else if (cell.isLastCowPlayed)
+              cell.copyWith(
+                isLastCowPlayed: false,
+              )
+            else
+              cell
+          else
+            cell
+      ],
     );
   }
 
   MorabarabaBoardModel captureCowBoardState(MorabarabaCowCell currentCowCell) {
     final newCowCell = currentCowCell.copyWith(cowType: MorabarabaCowType.none);
-    boardCells[currentCowCell.cellIndex] = newCowCell;
 
     return copyWith(
       //lastCowCellPlayed: newCowCell,
       selectedCowToMove: null,
+      boardCells: [
+        for (final cell in boardCells)
+          if (cell is MorabarabaCowCell)
+            if (cell.cellIndex == newCowCell.cellIndex) newCowCell else cell
+          else
+            cell
+      ],
     );
   }
 

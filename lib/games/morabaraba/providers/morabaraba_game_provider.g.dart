@@ -6,7 +6,7 @@ part of 'morabaraba_game_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$morabarabaGameHash() => r'59b3ba6e713f7c20b11054ae22d69b07c7da03e8';
+String _$morabarabaGameHash() => r'490e4bd84abef487a937a4663848921d47952b09';
 
 /// Copied from Dart SDK
 class _SystemHash {

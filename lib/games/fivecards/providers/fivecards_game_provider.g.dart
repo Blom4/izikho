@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'krusaid_game_provider.dart';
+part of 'fivecards_game_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$krusaidGameHash() => r'14b4dbc88ac833d8978a03315d1d6ec9ffab9062';
+String _$fivecardsGameHash() => r'5b8fbc712928f1fa916afee629fd9e15154df400';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,36 +29,36 @@ class _SystemHash {
   }
 }
 
-abstract class _$KrusaidGame
-    extends BuildlessAutoDisposeNotifier<KrusaidGameState> {
-  late final KrusaidGameModel game;
+abstract class _$FivecardsGame
+    extends BuildlessAutoDisposeNotifier<FivecardsGameState> {
+  late final FivecardsGameModel game;
 
-  KrusaidGameState build(
-    KrusaidGameModel game,
+  FivecardsGameState build(
+    FivecardsGameModel game,
   );
 }
 
-/// See also [KrusaidGame].
-@ProviderFor(KrusaidGame)
-const krusaidGameProvider = KrusaidGameFamily();
+/// See also [FivecardsGame].
+@ProviderFor(FivecardsGame)
+const fivecardsGameProvider = FivecardsGameFamily();
 
-/// See also [KrusaidGame].
-class KrusaidGameFamily extends Family<KrusaidGameState> {
-  /// See also [KrusaidGame].
-  const KrusaidGameFamily();
+/// See also [FivecardsGame].
+class FivecardsGameFamily extends Family<FivecardsGameState> {
+  /// See also [FivecardsGame].
+  const FivecardsGameFamily();
 
-  /// See also [KrusaidGame].
-  KrusaidGameProvider call(
-    KrusaidGameModel game,
+  /// See also [FivecardsGame].
+  FivecardsGameProvider call(
+    FivecardsGameModel game,
   ) {
-    return KrusaidGameProvider(
+    return FivecardsGameProvider(
       game,
     );
   }
 
   @override
-  KrusaidGameProvider getProviderOverride(
-    covariant KrusaidGameProvider provider,
+  FivecardsGameProvider getProviderOverride(
+    covariant FivecardsGameProvider provider,
   ) {
     return call(
       provider.game,
@@ -77,30 +77,30 @@ class KrusaidGameFamily extends Family<KrusaidGameState> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'krusaidGameProvider';
+  String? get name => r'fivecardsGameProvider';
 }
 
-/// See also [KrusaidGame].
-class KrusaidGameProvider
-    extends AutoDisposeNotifierProviderImpl<KrusaidGame, KrusaidGameState> {
-  /// See also [KrusaidGame].
-  KrusaidGameProvider(
-    KrusaidGameModel game,
+/// See also [FivecardsGame].
+class FivecardsGameProvider
+    extends AutoDisposeNotifierProviderImpl<FivecardsGame, FivecardsGameState> {
+  /// See also [FivecardsGame].
+  FivecardsGameProvider(
+    FivecardsGameModel game,
   ) : this._internal(
-          () => KrusaidGame()..game = game,
-          from: krusaidGameProvider,
-          name: r'krusaidGameProvider',
+          () => FivecardsGame()..game = game,
+          from: fivecardsGameProvider,
+          name: r'fivecardsGameProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$krusaidGameHash,
-          dependencies: KrusaidGameFamily._dependencies,
+                  : _$fivecardsGameHash,
+          dependencies: FivecardsGameFamily._dependencies,
           allTransitiveDependencies:
-              KrusaidGameFamily._allTransitiveDependencies,
+              FivecardsGameFamily._allTransitiveDependencies,
           game: game,
         );
 
-  KrusaidGameProvider._internal(
+  FivecardsGameProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -110,11 +110,11 @@ class KrusaidGameProvider
     required this.game,
   }) : super.internal();
 
-  final KrusaidGameModel game;
+  final FivecardsGameModel game;
 
   @override
-  KrusaidGameState runNotifierBuild(
-    covariant KrusaidGame notifier,
+  FivecardsGameState runNotifierBuild(
+    covariant FivecardsGame notifier,
   ) {
     return notifier.build(
       game,
@@ -122,10 +122,10 @@ class KrusaidGameProvider
   }
 
   @override
-  Override overrideWith(KrusaidGame Function() create) {
+  Override overrideWith(FivecardsGame Function() create) {
     return ProviderOverride(
       origin: this,
-      override: KrusaidGameProvider._internal(
+      override: FivecardsGameProvider._internal(
         () => create()..game = game,
         from: from,
         name: null,
@@ -138,14 +138,14 @@ class KrusaidGameProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
+  AutoDisposeNotifierProviderElement<FivecardsGame, FivecardsGameState>
       createElement() {
-    return _KrusaidGameProviderElement(this);
+    return _FivecardsGameProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is KrusaidGameProvider && other.game == game;
+    return other is FivecardsGameProvider && other.game == game;
   }
 
   @override
@@ -157,18 +157,17 @@ class KrusaidGameProvider
   }
 }
 
-mixin KrusaidGameRef on AutoDisposeNotifierProviderRef<KrusaidGameState> {
+mixin FivecardsGameRef on AutoDisposeNotifierProviderRef<FivecardsGameState> {
   /// The parameter `game` of this provider.
-  KrusaidGameModel get game;
+  FivecardsGameModel get game;
 }
 
-class _KrusaidGameProviderElement
-    extends AutoDisposeNotifierProviderElement<KrusaidGame, KrusaidGameState>
-    with KrusaidGameRef {
-  _KrusaidGameProviderElement(super.provider);
+class _FivecardsGameProviderElement extends AutoDisposeNotifierProviderElement<
+    FivecardsGame, FivecardsGameState> with FivecardsGameRef {
+  _FivecardsGameProviderElement(super.provider);
 
   @override
-  KrusaidGameModel get game => (origin as KrusaidGameProvider).game;
+  FivecardsGameModel get game => (origin as FivecardsGameProvider).game;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
