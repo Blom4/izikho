@@ -47,9 +47,23 @@ class FivecardsPlayedCardsWidget extends HookConsumerWidget {
                       ),
                     ),
                   for (GamePlayingCard card in playedCards)
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: GamePlayingCardWidget(card: card),
+                    AspectRatio(
+                      aspectRatio: FivecardsUtils.playingCardAspectRatio,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Draggable<
+                            ({bool isDeckCard, GamePlayingCard card})>(
+                          data: (isDeckCard: false, card: card),
+                          feedback: SizedBox(
+                            width: 100,
+                            child: GamePlayingCardWidget(card: card),
+                          ),
+                          child: SizedBox(
+                            width: 100,
+                            child: GamePlayingCardWidget(card: card),
+                          ),
+                        ),
+                      ),
                     )
                 ],
               );

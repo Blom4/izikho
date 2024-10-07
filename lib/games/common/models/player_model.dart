@@ -1,4 +1,5 @@
 import '../../../auth/model/profile_model.dart';
+import '../../fivecards/models/fivecards_player_model.dart';
 import '../../krusaid/models/krusaid_player_model.dart';
 import '../../morabaraba/models/marabaraba_player_model.dart';
 
@@ -34,6 +35,8 @@ abstract class PlayerModel {
     switch (playertype) {
       case KrusaidPlayerModel.playerType:
         return KrusaidPlayerModel.fromMap(map);
+      case FivecardsPlayerModel.playerType:
+        return FivecardsPlayerModel.fromMap(map);
       default:
         throw UnimplementedError();
     }
@@ -46,6 +49,8 @@ abstract class PlayerModel {
     switch (playerType) {
       case GamePlayerType.krusaid:
         return KrusaidPlayerModel.fromProfile(profile);
+      case GamePlayerType.fivecards:
+        return FivecardsPlayerModel.fromProfile(profile);
       case GamePlayerType.morabaraba:
         return MorabarabaPlayerModel.fromProfile(profile);
       default:

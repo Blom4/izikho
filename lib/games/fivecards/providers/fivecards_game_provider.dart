@@ -5,7 +5,6 @@ import '../../../common/providers/supabase_provider.dart';
 import '../../common/providers/game_online_provider.dart';
 import '../../common/models/game_playing_card.dart';
 import '../models/fivecards_game_model.dart';
-import '../models/fivecards_player_model.dart';
 
 part 'fivecards_game_provider.g.dart';
 
@@ -16,8 +15,10 @@ class FivecardsGame extends _$FivecardsGame {
     final asyncGame = ref.watch(gameOnlineProvider(game.id));
     return asyncGame.when(
       data: (data) => FivecardsGameState(data: data as FivecardsGameModel),
-      error: (error, stackTrace) =>
-          FivecardsGameState.error(data: game, error: error.toString()),
+      error: (error, stackTrace) => FivecardsGameState.error(
+        data: game,
+        error: error.toString(),
+      ),
       loading: () => FivecardsGameState.loading(data: game),
     );
   }
@@ -37,67 +38,50 @@ class FivecardsGame extends _$FivecardsGame {
     }
   }
 
-  Future<void> play(GamePlayingCard card, Playable playable) async {
+  Future<void> play(GamePlayingCard card) async {
+    if (!state.data.currentPlayer.isTurn) {
+      throw Exception('Sorry, is not your turn');
+    }
+    if (state.data.currentPlayer.cards.length < 6) {
+      throw Exception('Please pop a deck or played card to player');
+    }
+
     try {
-      if (state.data.currentPlayer.isTurn) {
-        state = FivecardsGameState.loading(data: state.data);
-        final res = await _supabase.from('games').upsert({
-          'id': game.id,
-          ...state.data.nextPlayState(card, playable).toMap(),
-        }).select();
-        state = FivecardsGameState(data: FivecardsGameModel.fromMap(res.first));
-      }
+      state = FivecardsGameState.loading(data: state.data);
+      final res = await _supabase.from('games').upsert({
+        'id': game.id,
+        ...state.data.nextPlayState(card).toMap(),
+      }).select();
+      state = FivecardsGameState(data: FivecardsGameModel.fromMap(res.first));
     } catch (e) {
       state = FivecardsGameState.error(data: state.data, error: e.toString());
     }
   }
 
   void popDeck() {
-    if (state.data.currentPlayer.isTurn) {
-      state = FivecardsGameState(data: state.data.nextDeckState());
+    if (!state.data.currentPlayer.isTurn) {
+      throw Exception('Sorry, is not your turn');
     }
+    if (state.data.currentPlayer.cards.length >= 6) {
+      throw Exception('Card already popped so please play');
+    }
+    state = FivecardsGameState(data: state.data.nextDeckState());
   }
 
-  Future<void> acceptShot(FivecardsPlayerModel shotPlayer) async {
-    try {
-      if (state.data.currentPlayer.isTurn) {
-        state = FivecardsGameState.loading(data: state.data);
-        final res = await _supabase.from('games').upsert({
-          'id': game.id,
-          ...state.data.nextShotState(shotPlayer).toMap(),
-        }).select();
-        state = FivecardsGameState(data: FivecardsGameModel.fromMap(res.first));
-      }
-    } catch (e) {
-      state = FivecardsGameState.error(data: state.data, error: e.toString());
+  void popPlayedCard() {
+    if (!state.data.currentPlayer.isTurn) {
+      throw Exception('Sorry, is not your turn');
     }
+    if (state.data.currentPlayer.cards.length >= 6) {
+      throw Exception('Card already popped so please play');
+    }
+
+    state = FivecardsGameState(data: state.data.nextPlayedCardsState());
   }
 
-  Future<void> playDeck() async {
-    try {
-      if (state.data.currentPlayer.isTurn) {
-        state = FivecardsGameState.loading(data: state.data);
-        final nextPlayer = state.data.getNextPlayer();
-        final res = await _supabase.from('games').upsert({
-          'id': game.id,
-          ...state.data.copyWith(
-            turnIndex: nextPlayer.index,
-            players: [
-              for (var player in state.data.players)
-                if (player.index == nextPlayer.index)
-                  nextPlayer
-                else if (player.isTurn)
-                  player.copyWith(isTurn: false)
-                else
-                  player
-            ],
-          ).toMap(),
-        }).select();
-        state = FivecardsGameState(data: FivecardsGameModel.fromMap(res.first));
-      }
-    } catch (e) {
-      state = FivecardsGameState.error(data: state.data, error: e.toString());
-    }
+  void sortPlayerCards() {
+    print('sorting');
+    state = FivecardsGameState(data: state.data.meWithSortedCards());
   }
 
   SupabaseClient get _supabase => ref.read(supabaseProvider);

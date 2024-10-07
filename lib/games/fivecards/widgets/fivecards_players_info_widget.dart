@@ -37,9 +37,9 @@ class FivecardsPlayersInfoWidget extends StatelessWidget {
                               : null,
               decoration: BoxDecoration(
                 border: player.isTurn
-                    ? Border(
+                    ? const Border(
                         bottom: BorderSide(
-                          color: player.isShot ? Colors.red : Colors.deepPurple,
+                          color: Colors.deepPurple,
                           width: 3,
                         ),
                       )

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/common/utils/snackbar.dart';
-import 'package:izikho/games/krusaid/models/krusaid_player_model.dart';
 
 import '../../common/models/game_model.dart';
 import '../../common/models/player_model.dart';
 import '../../common/widgets/game_options_widgets.dart';
 import '../models/fivecards_game_model.dart';
+import '../models/fivecards_player_model.dart';
 
 class FivecardsGameOptionsWidget extends StatelessWidget {
   const FivecardsGameOptionsWidget({
@@ -23,7 +23,7 @@ class FivecardsGameOptionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (gameMode) {
-      GameMode.online => KrusaidOnlineOptionsWidget(
+      GameMode.online => FivecardsOnlineOptionsWidget(
           onStartGame: onStartOnlineGame,
         ),
       _ => const Text('Coming Soon'),
@@ -31,31 +31,30 @@ class FivecardsGameOptionsWidget extends StatelessWidget {
   }
 }
 
-class KrusaidOnlineOptionsWidget extends StatefulHookConsumerWidget {
-  const KrusaidOnlineOptionsWidget({
+class FivecardsOnlineOptionsWidget extends StatefulHookConsumerWidget {
+  const FivecardsOnlineOptionsWidget({
     super.key,
     required this.onStartGame,
   });
   final Future<void> Function(FivecardsGameOptions) onStartGame;
 
   @override
-  ConsumerState<KrusaidOnlineOptionsWidget> createState() =>
-      _KrusaidOnlineOptionsWidgetState();
+  ConsumerState<FivecardsOnlineOptionsWidget> createState() =>
+      _FivecardsOnlineOptionsWidgetState();
 }
 
-class _KrusaidOnlineOptionsWidgetState
-    extends ConsumerState<KrusaidOnlineOptionsWidget> {
-  late ValueNotifier<List<KrusaidPlayerModel>> selectedPlayers;
-  late ValueNotifier<double> servedCards;
+class _FivecardsOnlineOptionsWidgetState
+    extends ConsumerState<FivecardsOnlineOptionsWidget> {
+  late ValueNotifier<List<FivecardsPlayerModel>> selectedPlayers;
   late ValueNotifier<bool> loading;
 
-  Future<void> searchOnlinePlayer(List<KrusaidPlayerModel> players) async {
-    if ((players.length + 1) < GameType.krusaid.maxPlayers) {
+  Future<void> searchOnlinePlayer(List<FivecardsPlayerModel> players) async {
+    if ((players.length + 1) < GameType.fivecards.maxPlayers) {
       selectedPlayers.value = players;
     } else {
       if (mounted) {
         context.showSnackBar(
-          'You Can Only invite ${GameType.morabaraba.maxPlayers - 1} player(s)',
+          'You Can Only invite ${GameType.fivecards.maxPlayers - 1} player(s)',
           isError: true,
         );
       }
@@ -64,55 +63,32 @@ class _KrusaidOnlineOptionsWidgetState
 
   Future<void> startGame() async {
     final gameOptions = FivecardsGameOptions(
-      gameType: GameType.krusaid,
-      gamePlayerType: GamePlayerType.krusaid,
+      gameType: GameType.fivecards,
+      gamePlayerType: GamePlayerType.fivecards,
       gameMode: GameMode.online,
       players: selectedPlayers.value,
-      servedCards: servedCards.value,
     );
     if (selectedPlayers.value.isNotEmpty) {
       loading.value = true;
       await widget.onStartGame(gameOptions);
       loading.value = false;
     } else {
-      context.showSnackBar("Please Invite Atleast One Player");
+      context.showSnackBar("Please Invite At least One Player");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    selectedPlayers = useState<List<KrusaidPlayerModel>>([]);
-    servedCards = useState<double>(6);
+    selectedPlayers = useState<List<FivecardsPlayerModel>>([]);
     loading = useState<bool>(false);
     return GameOptionsContainerWidget(
       buttonLabel: loading.value ? 'Starting' : 'Start Game',
-      gameType: GameType.krusaid,
+      gameType: GameType.fivecards,
       onStartGame: loading.value ? null : startGame,
       children: [
-        GameOptionCardWidget(
-          icon: Icons.seven_k_outlined,
-          title: 'Cards To Serve',
-          children: [
-            Row(
-              children: [
-                Text("${servedCards.value}"),
-                Expanded(
-                  child: Slider(
-                    label: 'Cards: ${servedCards.value}',
-                    max: 8,
-                    min: 4,
-                    divisions: 4,
-                    value: servedCards.value,
-                    onChanged: (value) => servedCards.value = value,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        GamePlayersOptionCardWidget<KrusaidPlayerModel>(
+        GamePlayersOptionCardWidget<FivecardsPlayerModel>(
           onSearchOnlinePlayer: searchOnlinePlayer,
-          playerType: GamePlayerType.krusaid,
+          playerType: GamePlayerType.fivecards,
         ),
       ],
     );

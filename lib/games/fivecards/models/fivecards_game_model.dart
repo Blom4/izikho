@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:playing_cards/playing_cards.dart';
-
 import '../../common/models/game_model.dart';
 import '../../common/models/player_model.dart';
 import 'fivecards_player_model.dart';
@@ -10,12 +7,11 @@ class FivecardsGameOptions extends GameOptions {
   final double servedCards;
 
   FivecardsGameOptions({
-  
     required super.gameType,
     required super.gameMode,
     required super.players,
     required super.gamePlayerType,
-    required this.servedCards,
+    this.servedCards = 5,
   });
 }
 
@@ -58,8 +54,6 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
   final List<GamePlayingCard> deck;
   final int turnIndex;
   final bool served;
-  bool direction;
-  Playable playable;
   final double servedCards;
 
   FivecardsGameModel({
@@ -74,8 +68,6 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     required this.servedCards,
     this.playedCards = const [],
     this.turnIndex = 0,
-    this.playable = Playable.any,
-    this.direction = true,
     this.served = false,
   });
 
@@ -102,9 +94,7 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
           (x) => GamePlayingCard.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      playable: Playable.values.firstWhere((e) => e.name == extra['playable']),
       turnIndex: extra['turn_index'] as int,
-      direction: extra['direction'] as bool,
       servedCards: extra['served_cards'] as double,
       served: extra['served'] as bool,
     );
@@ -122,9 +112,7 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
         'played_cards': playedCards.map((x) => x.toMap()).toList(),
         'deck': deck.map((x) => x.toMap()).toList(),
         'served_cards': servedCards,
-        'playable': playable.name,
         'turn_index': turnIndex,
-        'direction': direction,
         'served': served,
       }
     };
@@ -141,10 +129,8 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     bool? gameOver,
     List<GamePlayingCard>? playedCards,
     List<GamePlayingCard>? deck,
-    Playable? playable,
     int? turnIndex,
     double? servedCards,
-    bool? direction,
     bool? served,
   }) {
     return FivecardsGameModel(
@@ -155,20 +141,25 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
       players: players ?? this.players,
       started: started ?? this.started,
       gameOver: gameOver ?? this.gameOver,
-    
       playedCards: playedCards ?? this.playedCards,
       deck: deck ?? this.deck,
-      playable: playable ?? this.playable,
       turnIndex: turnIndex ?? this.turnIndex,
       servedCards: servedCards ?? this.servedCards,
-      direction: direction ?? this.direction,
       served: served ?? this.served,
     );
   }
 
   @override
   String toString() {
-    return 'FivecardsGameModel(playedCards: $playedCards, deck: $deck, playable: $playable, turnIndex: $turnIndex, numOfPlayers: $numOfPlayers, direction: $direction, served: $served)';
+    return '''
+      FivecardsGameModel(
+        playedCards: $playedCards, 
+        deck: $deck, 
+        turnIndex: $turnIndex, 
+        numOfPlayers: $numOfPlayers, 
+        served: $served
+      )
+    ''';
   }
 
   @override
@@ -208,6 +199,16 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     deck.shuffle();
   }
 
+  FivecardsGameModel meWithSortedCards() => copyWith(
+        players: [
+          for (var player in players)
+            if (player.index == currentPlayer.index)
+              currentPlayer.withSortedCards()
+            else
+              player
+        ],
+      );
+
   FivecardsGameModel serveCards() {
     if (!served) {
       List<FivecardsPlayerModel> players = [];
@@ -226,15 +227,7 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     throw Exception('Room already served');
   }
 
-  FivecardsGameModel nextPlayState(GamePlayingCard card, Playable playable) {
-    if (card.value == CardValue.jack) {
-      direction = !direction;
-    }
-
-    if (card.suit == Suit.joker && playable == Playable.any) {
-      this.playable = playable;
-    }
-
+  FivecardsGameModel nextPlayState(GamePlayingCard card) {
     FivecardsPlayerModel me = _getCurrentPlayer(card);
 
     if (me.cards.isEmpty) {
@@ -246,23 +239,18 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     return copyWith(
       playedCards: [...playedCards, card],
       turnIndex: nextPlayer.index,
-      playable: playable,
-      players: players.map((e) {
-        if (e.index == nextPlayer.index) {
-          if (me.index == nextPlayer.index) {
-            return me.copyWith(
-              isTurn: true,
-              cardsToTake: 0,
-              isShot: false,
-            );
-          }
-          return nextPlayer;
-        } else if (e.index == me.index) {
-          return me;
-        } else {
-          return e;
-        }
-      }).toList(),
+      players: [
+        for (final player in players)
+          if (player.index == nextPlayer.index)
+            if (me.index == nextPlayer.index)
+              me.copyWith(isTurn: true)
+            else
+              nextPlayer
+          else if (player.index == me.index)
+            me
+          else
+            player
+      ],
     );
   }
 
@@ -284,147 +272,42 @@ class FivecardsGameModel extends GameModel<FivecardsPlayerModel> {
     );
   }
 
-  FivecardsGameModel nextShotState(FivecardsPlayerModel shotPlayer) {
-    FivecardsPlayerModel nextPlayer = getNextPlayer();
-    final List<GamePlayingCard> takenCards = [];
-    for (int i = 0; i < shotPlayer.cardsToTake; i++) {
-      var topCard = deck.removeLast();
-      if (deck.isEmpty) {
-        shuffleDeck();
-      }
-      takenCards.add(topCard);
+  FivecardsGameModel nextPlayedCardsState() {
+    if (playedCards.isNotEmpty) {
+      GamePlayingCard topPlayedCard = playedCards.removeLast();
+
+      return copyWith(
+        players: [
+          for (var player in players)
+            if (player.isTurn)
+              player.copyWith(cards: [...player.cards, topPlayedCard])
+            else
+              player
+        ],
+      );
+    } else {
+      return this;
     }
-    return copyWith(
-      turnIndex: nextPlayer.index,
-      players: [
-        for (final player in players)
-          if (player.index == shotPlayer.index)
-            shotPlayer.copyWith(
-              isTurn: false,
-              isShot: false,
-              cardsToTake: 0,
-              cards: [...shotPlayer.cards, ...takenCards],
-            )
-          else if (player.index == nextPlayer.index)
-            nextPlayer
-          else
-            player
-      ],
-    );
   }
 
   FivecardsPlayerModel getNextPlayer([GamePlayingCard? card]) {
-    if (gameOver || card == null) {
-      return players[_nextIndex].copyWith(
-        isShot: false,
-        isTurn: true,
-        cardsToTake: 0,
-      );
-    }
-    switch (card.value) {
-      case CardValue.two:
-        return players[_nextIndex].copyWith(
-          isShot: true,
-          cardsToTake: players[_currentIndex].isShot
-              ? players[_currentIndex].cardsToTake + 2
-              : 2,
-          isTurn: true,
-        );
-      case (CardValue.joker_1 || CardValue.joker_2):
-        if (playable != Playable.any) {
-          return players[_nextIndex].copyWith(
-            isShot: false,
-            isTurn: true,
-            cardsToTake: 0,
-          );
-        }
-        return players[_nextIndex].copyWith(
-          isShot: true,
-          cardsToTake: players[_currentIndex].isShot
-              ? players[_currentIndex].cardsToTake + 4
-              : 4,
-          isTurn: true,
-        );
-      case CardValue.seven:
-        return players[_skipIndex].copyWith(
-          isShot: false,
-          isTurn: true,
-          cardsToTake: 0,
-        );
-
-      default:
-        if (card.value == CardValue.jack && numOfPlayers == 2) {
-          return players[_currentIndex].copyWith(
-            isShot: false,
-            isTurn: true,
-            cardsToTake: 0,
-          );
-        }
-        return players[_nextIndex].copyWith(
-          isShot: false,
-          isTurn: true,
-          cardsToTake: 0,
-        );
-    }
+    return players[_nextIndex].copyWith(
+      isTurn: true,
+    );
   }
 
-  FivecardsPlayerModel _getCurrentPlayer(GamePlayingCard card) => currentPlayer.copyWith(
+  FivecardsPlayerModel _getCurrentPlayer(GamePlayingCard card) =>
+      currentPlayer.copyWith(
         isTurn: false,
-        isShot: false,
-        cardsToTake: 0,
-        cards: players[_currentIndex]
-            .cards
-            .where((element) => element != card)
-            .toList(),
+        cards: players[_currentIndex].cards.where((e) => e != card).toList(),
       );
-
-  bool isPlayable(GamePlayingCard card) {
-    return playable == Playable.any ||
-        card.value == CardValue.eight ||
-        card.suit == Suit.joker ||
-        playable.suit == card.suit ||
-        playedCards.last.value == card.value;
-  }
 
   FivecardsPlayerModel get turnPlayer => players[turnIndex];
-
   int get _currentIndex => turnIndex;
-
   bool get isMyTurn => currentPlayer.index == turnIndex;
   bool get isWinner => currentPlayer.index == winner.index;
   bool get islastPlayCard => currentPlayer.cards.length == 1;
-
-  int get _nextIndex {
-    if (direction) {
-      return (_currentIndex + 1) % numOfPlayers;
-    }
-    return _currentIndex == 0 ? numOfPlayers - 1 : _currentIndex - 1;
-  }
-
-  int get _skipIndex {
-    if (numOfPlayers == 2) {
-      return _currentIndex;
-    }
-    if (direction) {
-      if (numOfPlayers.isEven) {
-        return _currentIndex + 3 >= numOfPlayers
-            ? (_currentIndex + 3) - numOfPlayers
-            : _currentIndex + 3;
-      }
-      return _currentIndex + 2 >= numOfPlayers
-          ? (_currentIndex + 2) - numOfPlayers
-          : _currentIndex + 2;
-    }
-    if (numOfPlayers.isEven) {
-      return _currentIndex < 3
-          ? (_currentIndex - 3) + numOfPlayers
-          : _currentIndex - 3;
-    }
-    return _currentIndex < 2
-        ? (_currentIndex - 2) + numOfPlayers
-        : _currentIndex - 2;
-  }
-
+  int get _nextIndex => (_currentIndex + 1) % numOfPlayers;
   int get deckCount => deck.length;
   int get numOfPlayers => players.length;
 }

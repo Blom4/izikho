@@ -182,11 +182,9 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
     if (!currentPlayer.isTurn) {
       throw Exception('Sorry,  is not your turn');
     }
-
     if (currentCowCell.hasNoCow) {
       throw Exception('Please select a cell with a cow');
     }
-
     if (currentCowCell.cowType == turnPlayer.cowType) {
       throw Exception('Please select another player cow');
     }
@@ -274,20 +272,21 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
   factory MorabarabaGameModel.fromMap(Map<String, dynamic> map) {
     final extra = map['extra_props'] as Map<String, dynamic>;
     return MorabarabaGameModel(
-        id: map['id'] as String,
-        gameType: GameType.values.firstWhere((e) => e.name == map['game_type']),
-        gameMode: GameMode.values.firstWhere((e) => e.name == map['game_mode']),
-        players: List<MorabarabaPlayerModel>.from(
-            (map['players'] as List<dynamic>).map<PlayerModel>(
-                (x) => PlayerModel.fromMap(x as Map<String, dynamic>))),
-        started: map['started'] as bool,
-        gameOver: map['game_over'] as bool,
-        board: MorabarabaBoardModel.fromMap(
-          extra['board'] as Map<String, dynamic>,
-        ),
-        turnIndex: extra['turn_index'] as int,
-        gameAction: MorabarabaGameAction.values
-            .firstWhere((e) => e.name == extra['game_action']));
+      id: map['id'] as String,
+      gameType: GameType.values.firstWhere((e) => e.name == map['game_type']),
+      gameMode: GameMode.values.firstWhere((e) => e.name == map['game_mode']),
+      players: List<MorabarabaPlayerModel>.from(
+          (map['players'] as List<dynamic>).map<PlayerModel>(
+              (x) => PlayerModel.fromMap(x as Map<String, dynamic>))),
+      started: map['started'] as bool,
+      gameOver: map['game_over'] as bool,
+      board: MorabarabaBoardModel.fromMap(
+        extra['board'] as Map<String, dynamic>,
+      ),
+      turnIndex: extra['turn_index'] as int,
+      gameAction: MorabarabaGameAction.values
+          .firstWhere((e) => e.name == extra['game_action']),
+    );
   }
 
   @override

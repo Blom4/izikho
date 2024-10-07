@@ -5,11 +5,9 @@ import '../../common/models/player_model.dart';
 import '../../common/models/game_playing_card.dart';
 
 class FivecardsPlayerModel extends PlayerModel {
-  static const playerType = GamePlayerType.krusaid;
+  static const playerType = GamePlayerType.fivecards;
   final List<GamePlayingCard> cards;
   final int index;
-  final bool isShot;
-  final int cardsToTake;
 
   FivecardsPlayerModel({
     required super.id,
@@ -19,9 +17,15 @@ class FivecardsPlayerModel extends PlayerModel {
     super.isOwner,
     required this.index,
     this.cards = const [],
-    this.isShot = false,
-    this.cardsToTake = 0,
   });
+
+   FivecardsPlayerModel withSortedCards() {
+    
+    cards.sort((a, b) => a.value.rank.compareTo(b.value.rank));
+    return copyWith(
+      cards: cards
+    );
+  }
 
   @override
   FivecardsPlayerModel copyWith({
@@ -29,11 +33,9 @@ class FivecardsPlayerModel extends PlayerModel {
     String? username,
     List<GamePlayingCard>? cards,
     int? index,
-    bool? isTurn,
-    bool? isShot,
-    bool? joined,
     bool? isOwner,
-    int? cardsToTake,
+    bool? isTurn,
+    bool? joined,
   }) {
     return FivecardsPlayerModel(
       id: id ?? this.id,
@@ -41,10 +43,8 @@ class FivecardsPlayerModel extends PlayerModel {
       cards: cards ?? this.cards,
       index: index ?? this.index,
       isTurn: isTurn ?? this.isTurn,
-      isShot: isShot ?? this.isShot,
       joined: joined ?? this.joined,
       isOwner: isOwner ?? this.isOwner,
-      cardsToTake: cardsToTake ?? this.cardsToTake,
     );
   }
 
@@ -57,10 +57,8 @@ class FivecardsPlayerModel extends PlayerModel {
       'cards': cards.map((x) => x.toMap()).toList(),
       'index': index,
       'isTurn': isTurn,
-      'isShot': isShot,
       'joined': joined,
       'isOwner': isOwner,
-      'cardsToTake': cardsToTake,
     };
   }
 
@@ -83,16 +81,19 @@ class FivecardsPlayerModel extends PlayerModel {
       ),
       index: map['index'] as int,
       isTurn: map['isTurn'] as bool,
-      isShot: map['isShot'] as bool,
       joined: map['joined'] as bool,
       isOwner: map['isOwner'] as bool,
-      cardsToTake: map['cardsToTake'] as int,
     );
   }
 
   @override
   String toString() {
-    return 'FivecardsPlayerModel(cards: $cards, index: $index, isShot: $isShot, cardsToTake: $cardsToTake)';
+    return '''
+        FivecardsPlayerModel(
+          cards: $cards, 
+          index: $index
+        )
+     ''';
   }
 
   @override
@@ -105,9 +106,7 @@ class FivecardsPlayerModel extends PlayerModel {
         other.isOwner == isOwner &&
         other.username == username &&
         listEquals(other.cards, cards) &&
-        other.index == index &&
-        other.isShot == isShot &&
-        other.cardsToTake == cardsToTake;
+        other.index == index;
   }
 
   @override
@@ -118,8 +117,6 @@ class FivecardsPlayerModel extends PlayerModel {
         joined.hashCode ^
         isOwner.hashCode ^
         cards.hashCode ^
-        index.hashCode ^
-        isShot.hashCode ^
-        cardsToTake.hashCode;
+        index.hashCode;
   }
 }

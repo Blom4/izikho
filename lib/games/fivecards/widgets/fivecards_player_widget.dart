@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/fivecards_player_model.dart';
 
-
 class FivecardsPlayerWidget extends StatelessWidget {
   const FivecardsPlayerWidget({
     super.key,
@@ -18,11 +17,7 @@ class FivecardsPlayerWidget extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor: player.isTurn
-                ? player.isShot
-                    ? Colors.red
-                    : Colors.green
-                : Colors.white,
+            backgroundColor: player.isTurn ? Colors.green : Colors.white,
             child: const CircleAvatar(
               radius: 22,
             ),

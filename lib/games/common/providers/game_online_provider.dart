@@ -1,3 +1,5 @@
+import 'package:izikho/games/fivecards/models/fivecards_game_model.dart';
+import 'package:izikho/games/fivecards/models/fivecards_player_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,6 +26,10 @@ class GameOnline extends _$GameOnline {
         case GameType.krusaid:
           final profile = await _getProfile();
           yield KrusaidGameModel.fromMap(games.first)
+              .copyWith(profileId: profile.id);
+        case GameType.fivecards:
+          final profile = await _getProfile();
+          yield FivecardsGameModel.fromMap(games.first)
               .copyWith(profileId: profile.id);
         default:
           throw UnimplementedError();
@@ -70,6 +76,38 @@ class GameOnline extends _$GameOnline {
             servedCards: krusaidGameOptions.servedCards,
           ).toMap();
         }(),
+      GameType.fivecards => () {
+          final fivecardsGameOptions = gameOptions as FivecardsGameOptions;
+          final fivecardsPlayers =
+              [currentPlayer, ...gameOptions.players].indexed.map(
+            (element) {
+              var (i, e) = element;
+              if (i == 0) {
+                return FivecardsPlayerModel(
+                  id: e.id,
+                  username: e.username,
+                  index: i,
+                  joined: true,
+                  isOwner: true,
+                  isTurn: true,
+                );
+              }
+              return FivecardsPlayerModel(
+                id: e.id,
+                username: e.username,
+                index: i,
+              );
+            },
+          ).toList();
+
+          return FivecardsGameModel(
+            gameType: gameOptions.gameType,
+            gameMode: gameOptions.gameMode,
+            players: fivecardsPlayers,
+            deck: GameDeck.myStandardFiftyFourCardDeck(),
+            servedCards: fivecardsGameOptions.servedCards,
+          ).toMap();
+        }(),
       _ => throw UnimplementedError(),
     };
     final response = await _supabase.from('games').insert(newGameMap).select();
@@ -89,6 +127,19 @@ class GameOnline extends _$GameOnline {
           return krusaidGame.copyWith(
             players: [
               for (final player in krusaidGame.players)
+                if (player.id == profile.id)
+                  player.copyWith(joined: true)
+                else
+                  player,
+            ],
+          ).toMap();
+        }(),
+      GameType.fivecards => () {
+          final fivecardsGame = FivecardsGameModel.fromMap(gameResponse);
+
+          return fivecardsGame.copyWith(
+            players: [
+              for (final player in fivecardsGame.players)
                 if (player.id == profile.id)
                   player.copyWith(joined: true)
                 else

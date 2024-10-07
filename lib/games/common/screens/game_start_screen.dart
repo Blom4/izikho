@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/common/utils/snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../fivecards/widgets/fivecards_game_options_widget.dart';
 import '../../krusaid/widgets/krusaid_game_options_widget.dart';
 import '../../morabaraba/widgets/morabaraba_game_options_widget.dart';
 import '../models/game_model.dart';
@@ -131,6 +132,11 @@ class _GameStartScreenState extends ConsumerState<GameStartScreen> {
               if (selectedGame.value != null && selectedMode.value != null)
                 switch (selectedGame.value) {
                   GameType.krusaid => KrusaidGameOptionsWidget(
+                      gameMode: selectedMode.value!,
+                      onStartOnlineGame: startOnlineGame,
+                      onStartOfflineGame: startOffineGame,
+                    ),
+                  GameType.fivecards=> FivecardsGameOptionsWidget(
                       gameMode: selectedMode.value!,
                       onStartOnlineGame: startOnlineGame,
                       onStartOfflineGame: startOffineGame,

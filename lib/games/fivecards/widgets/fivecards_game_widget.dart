@@ -12,13 +12,17 @@ import 'fivecards_playground_widget.dart';
 class FivecardsGameWidget extends HookConsumerWidget {
   final FivecardsGameModel game;
   final void Function(GamePlayingCard) onPlayCard;
-  final void Function(GamePlayingCard) onDeckCard;
+  final void Function() onDeckCard;
+  final void Function() onPlayedCard;
+  final void Function() onSortPlayerCards;
 
   const FivecardsGameWidget({
     super.key,
     required this.game,
     required this.onPlayCard,
     required this.onDeckCard,
+    required this.onPlayedCard,
+    required this.onSortPlayerCards,
   });
 
   @override
@@ -45,7 +49,8 @@ class FivecardsGameWidget extends HookConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FivecardsDeckWidget(deck: game.deck),
-                playableCard(game.playable),
+                //playableCard(game.playable),
+                const SizedBox(width: 20),
                 FivecardsPlayedCardsWidget(
                   playedCards: game.playedCards,
                   onPlayCard: onPlayCard,
@@ -55,12 +60,14 @@ class FivecardsGameWidget extends HookConsumerWidget {
             FivecardsPlayerCardsWidget(
               player: game.currentPlayer,
               onDeckCard: onDeckCard,
+              onPlayedCard: onPlayedCard
             ),
             const SizedBox(height: 10),
-            KrusaidCurrentPlayerInfoWidget(
+            FivecardsCurrentPlayerInfoWidget(
               player: game.currentPlayer,
               deckLength: game.deck.length,
               playedLength: game.playedCards.length,
+              onSortPlayerCards: onSortPlayerCards
             )
           ],
         ),
@@ -98,17 +105,19 @@ class FivecardsGameWidget extends HookConsumerWidget {
   }
 }
 
-class KrusaidCurrentPlayerInfoWidget extends StatelessWidget {
-  const KrusaidCurrentPlayerInfoWidget({
+class FivecardsCurrentPlayerInfoWidget extends StatelessWidget {
+  const FivecardsCurrentPlayerInfoWidget({
     super.key,
     required this.player,
     required this.deckLength,
     required this.playedLength,
+    required this.onSortPlayerCards,
   });
 
   final FivecardsPlayerModel player;
   final int deckLength;
   final int playedLength;
+  final void Function() onSortPlayerCards;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -152,6 +161,10 @@ class KrusaidCurrentPlayerInfoWidget extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.sort),
+            onPressed:onSortPlayerCards,
           ),
           IconButton(
             icon: const Icon(Icons.menu),

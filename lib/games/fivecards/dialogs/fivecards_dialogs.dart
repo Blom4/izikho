@@ -3,7 +3,7 @@ import 'package:playing_cards/playing_cards.dart';
 
 import '../../common/models/game_playing_card.dart';
 
-extension KrusaidDialogs on BuildContext {
+extension FivecardsDialogs on BuildContext {
   Future<Playable?> showEightDialog() => showDialog<Playable>(
         context: this,
         barrierDismissible: false,

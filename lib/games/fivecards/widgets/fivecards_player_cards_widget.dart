@@ -12,10 +12,12 @@ class FivecardsPlayerCardsWidget extends HookConsumerWidget {
     super.key,
     required this.player,
     required this.onDeckCard,
+    required this.onPlayedCard,
   });
 
   final FivecardsPlayerModel player;
-  final void Function(GamePlayingCard) onDeckCard;
+  final void Function() onDeckCard;
+  final void Function() onPlayedCard;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,8 +26,9 @@ class FivecardsPlayerCardsWidget extends HookConsumerWidget {
         constraints: const BoxConstraints(maxWidth: 300),
         padding: const EdgeInsets.all(5),
         child: DragTarget<({bool isDeckCard, GamePlayingCard card})>(
-          onAcceptWithDetails: (details) => onDeckCard(details.data.card),
-          onWillAcceptWithDetails: (details) => details.data.isDeckCard,
+          onAcceptWithDetails: (details) =>
+              details.data.isDeckCard ? onDeckCard() : onPlayedCard(),
+          //onWillAcceptWithDetails: (details) => details.data.isDeckCard,
           builder: (context, candidateData, rejectedData) {
             return FlatCardFan(
               children: [

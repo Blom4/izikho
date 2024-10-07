@@ -23,6 +23,8 @@ class MorabarabaGame extends _$MorabarabaGame {
     );
   }
 
+  
+
   void updateGame(MorabarabaCowCell currentCowCell) {
     final newGameState = switch (state.gameAction) {
       MorabarabaGameAction.place => () {
@@ -43,6 +45,14 @@ class MorabarabaGame extends _$MorabarabaGame {
     final allValidMoves = newGameState.board.allBoardValidMoves(
       newGameState.turnPlayer.cowType,
     );
+
+    if (newGameState.noCowToPlace) {
+      if (newGameState.board.blackCowPositions.length < 3 ||
+          newGameState.board.whiteCowPositions.length < 3) {
+        state = newGameState.copyWith(gameOver: true);
+        
+      }
+    }
 
     if (newGameState.gameAction == MorabarabaGameAction.select &&
         allValidMoves.isEmpty) {
