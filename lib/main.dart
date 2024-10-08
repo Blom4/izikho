@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:izikho/app_router.dart';
+import 'package:izikho/supabase_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/utils/color_schemes.g.dart';
@@ -8,17 +9,15 @@ import 'common/utils/color_schemes.g.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    // url: 'http://127.0.0.1:54321',
-    url: 'http://192.168.245.52:54321',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    url: SupabaseConfig.url,
+    anonKey: SupabaseConfig.anonKey,
   );
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
-
+//B0ngan1@lp5452
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
