@@ -90,23 +90,19 @@ extension KrusaidDialogs on BuildContext {
               const SizedBox(height: 10),
               SizedBox(
                 height: 120,
-                child: ListView.builder(
-                  itemCount: gunCards.length,
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemBuilder: (_, index) {
-                    final gunCard = gunCards[index];
-
-                    return InkWell(
-                      onTap: () => Navigator.pop(context, gunCard),
-                      child: PlayingCardView(
-                        card: PlayingCard(
-                          gunCard.suit,
-                          gunCard.value,
+                child: FlatCardFan(
+                  children: [
+                    for (var card in gunCards)
+                      InkWell(
+                        onTap: () => Navigator.pop(context, card),
+                        child: PlayingCardView(
+                          card: PlayingCard(
+                            card.suit,
+                            card.value,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      )
+                  ],
                 ),
               ),
             ],

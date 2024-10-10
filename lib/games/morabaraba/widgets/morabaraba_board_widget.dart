@@ -22,11 +22,11 @@ class MorabarabaBoardWidget extends StatelessWidget {
     return AspectRatio(
       aspectRatio: ratio,
       child: Stack(
-        //alignment: Alignment.center,
         children: [
           MorabarabaBoard(
             aspectRatio: ratio,
           ),
+          //Text("helol")
           MorabarabaGrid(
             board: board,
             updateBoard: updateBoard,
@@ -51,12 +51,38 @@ class MorabarabaGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return GridView.count(
+    //   reverse: true,
+    //   physics: const NeverScrollableScrollPhysics(),
+    //   crossAxisCount: 15,
+    //   childAspectRatio: aspectRatio,
+    //   children: [
+    //     for (var boardCell in board.boardCells)
+    //       if (boardCell.type != MorabarabaCellType.none)
+    //         if (boardCell is MorabarabaCowCell)
+    //           MorabarabaCowCellWidget(
+    //             cell: boardCell,
+    //             onTap: () => updateBoard(
+    //               boardCell,
+    //             ),
+    //           )
+    //         else
+    //           Center(
+    //             child: Text("${boardCell.cellIndex}"),
+    //           )
+    //       else
+    //         Container(
+    //           color: Colors.transparent,
+    //         )
+    //   ],
+    // );
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 15,
         childAspectRatio: aspectRatio,
       ),
+      reverse: true,
       itemCount: 15 * 15,
       itemBuilder: (context, index) {
         if (board.boardCells[index].type != MorabarabaCellType.none) {
@@ -73,6 +99,7 @@ class MorabarabaGrid extends StatelessWidget {
           // );
         }
         return Container(
+          //color: Colors.amber,
           color: Colors.transparent,
         );
       },

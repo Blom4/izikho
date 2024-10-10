@@ -17,7 +17,7 @@ Future<void> main() async {
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
-//B0ngan1@lp5452
+//supabase B0ngan1@lp5452
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(

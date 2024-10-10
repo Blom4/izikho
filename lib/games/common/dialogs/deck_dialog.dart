@@ -4,7 +4,8 @@ import 'package:playing_cards/playing_cards.dart';
 import '../models/game_playing_card.dart';
 
 extension DeckDialog on BuildContext {
-  Future<GamePlayingCard?> showDeckDialog(List<GamePlayingCard> playableCards) =>
+  Future<GamePlayingCard?> showDeckDialog(
+          List<GamePlayingCard> playableCards) =>
       showDialog<GamePlayingCard>(
         context: this,
         barrierDismissible: false,
@@ -24,23 +25,19 @@ extension DeckDialog on BuildContext {
                 const SizedBox(height: 10),
                 SizedBox(
                   height: 120,
-                  child: ListView.builder(
-                    itemCount: playableCards.length,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (_, index) {
-                      final playableCard = playableCards[index];
-
-                      return InkWell(
-                        onTap: () => Navigator.pop(context, playableCard),
-                        child: PlayingCardView(
-                          card: PlayingCard(
-                            playableCard.suit,
-                            playableCard.value,
+                  child: FlatCardFan(
+                    children: [
+                      for (var card in playableCards)
+                        InkWell(
+                          onTap: () => Navigator.pop(context, card),
+                          child: PlayingCardView(
+                            card: PlayingCard(
+                              card.suit,
+                              card.value,
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        )
+                    ],
                   ),
                 ),
               ],

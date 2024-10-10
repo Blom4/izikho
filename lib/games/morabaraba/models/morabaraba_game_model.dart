@@ -188,9 +188,9 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
     if (currentCowCell.cowType == turnPlayer.cowType) {
       throw Exception('Please select another player cow');
     }
-    if (!noCowToPlace) {
-      throw Exception('Please Place A cow');
-    }
+    // if (!noCowToPlace) {
+    //   throw Exception('Please Place A cow');
+    // }
 
     final newBoard = board.captureCowBoardState(currentCowCell);
     newBoard.highlightCaptureCells(false);
@@ -217,8 +217,8 @@ class MorabarabaGameModel extends GameModel<MorabarabaPlayerModel> {
     );
   }
 
-  // bool get noCowToPlace => players.every((e) => e.cowsInHand < 1);
-  bool get noCowToPlace => turnPlayer.cowsInHand < 1;
+  bool get noCowToPlace => players.every((e) => e.cowsInHand < 1);
+  //bool get noCowToPlace => turnPlayer.cowsInHand < 1;
   MorabarabaPlayerModel get turnPlayer => players[turnIndex];
 
   @override
